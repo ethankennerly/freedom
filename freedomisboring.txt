@@ -1,12 +1,11 @@
 TODO
-	vary speed and density.
+	Each spawn prohibits one row and column.
+	Shuffle rows and columns.  
 	square adventurer walks and taps
 	see icon of arrow keys
 	lasers fire and hiss
 	being hit gibs, explosion, camera shake
 	dust monochrome
-	hear hit
-	hear music
 	see foreshadow
 	missile hisses
 	missile explodes
@@ -20,7 +19,10 @@ TODO
 	screen 2: square cannot pass through walls, rectangles can
 	screen 3: corridor. dodge rectangles
 	hear key pickup
-
+	high score on left
+	kongregate
+	try x4 zoom.
+	resume partway through song.
 
 DONE
 
@@ -37,6 +39,8 @@ LOG
 	10 Many rectangles move from any side of screen.
 	11 ...
 	13 Read click to start.  read arrow key to move.
+	14 ...
+	15 vary speed and density.
 
 
 JOURNAL

@@ -30,7 +30,6 @@ package com.finegamedesign.freedomisboring
                 FlxG.scores = [0];
                 FlxG.score = 0;
                 FlxG.flashFramerate = 60;
-                FlxG.bgColor = 0xFFFFD9C6;
                 // FlxG.visualDebug = true;
                 FlxG.worldBounds = new FlxRect(0, 0, 1280, 960);
             }
@@ -44,12 +43,13 @@ package com.finegamedesign.freedomisboring
             super.create();
             createScores();
             // loadMap();
+            FlxG.bgColor = 0xFFFFD9C6;
             player = new Player(FlxG.width / 2, FlxG.height / 2);
             player.y -= player.height / 2;
             player.x -= player.width / 2;
             add(player);
             enemies = new FlxGroup();
-            for (var concurrentBullet:int = 0; concurrentBullet < 128; concurrentBullet++) {
+            for (var concurrentBullet:int = 0; concurrentBullet < 64; concurrentBullet++) {
                 bullet = new Bullet();
                 bullet.exists = false;
                 enemies.add(bullet);
@@ -74,7 +74,7 @@ package com.finegamedesign.freedomisboring
         private function addHud():void
         {
             instructionText = new FlxText(0, 0, FlxG.width, 
-                first ? "CLICK ANYWHERE"
+                first ? "CLICK HERE"
                       : "PRESS ARROW KEYS TO DODGE BOXES");
             instructionText.color = textColor;
             instructionText.scrollFactor.x = 0.0;
@@ -116,18 +116,26 @@ package com.finegamedesign.freedomisboring
 
         // bullet
 
+        private var lastExcluded:Number = 0.5;
+
         private function maySpawnBullet():void
         {
             if (spawnTime + 4 < lifeTime) {
                 var startSide:int = (lifeTime / 4) % 4; 
+                var excluded:Number = lastExcluded + 0.125 * FlxG.random();
                 for (var b:Number = 0; b < Math.pow(lifeTime, 0.67); b += FlxG.timeScale) {
-                    spawnBullet((b + startSide) % 4);
+                    spawnBullet((b + startSide) % 4, excluded);
                 }
                 spawnTime = lifeTime;
             }
         }
 
-        private function spawnBullet(side:int):void
+        /**
+         * Gap always exists that follows a random walk.
+         * Example: 13/7/6 Invincible, speed x8. Play 400 seconds. Speed x1. 
+         * Play 120 seconds.  Expect no solid wall.  Repeat twice.
+         */
+        private function spawnBullet(side:int, excluded:Number):void
         {
             bullet = Bullet(enemies.getFirstAvailable());
             if (bullet == null)
@@ -135,9 +143,16 @@ package com.finegamedesign.freedomisboring
                 return;
             }
             var fraction:Number = FlxG.random();
+            var excludedPosition:int;
             if (0 == side % 2) {
-                bullet.y = cellWidth / 2 + fraction * (FlxG.height - cellWidth);
+                excluded = 
+                bullet.y = cellWidth / 2 + fraction * (FlxG.height - 2 * cellWidth);
                 bullet.y = int(bullet.y / cellWidth) * cellWidth;
+                excludedPosition = cellWidth / 2 + excluded * (FlxG.height - cellWidth);
+                excludedPosition = int(excludedPosition / cellWidth) * cellWidth;
+                if (bullet.y == excludedPosition) {
+                    bullet.y += cellWidth;
+                }
                 bullet.x = FlxG.width / 2 + (1 - side) * (FlxG.width / 2 + cellWidth);
                 bullet.velocity.x = (side - 1) * bullet.speed;
                 bullet.velocity.y = 0;
@@ -145,6 +160,11 @@ package com.finegamedesign.freedomisboring
             else {
                 bullet.x = cellWidth / 2 + fraction * (FlxG.width - cellWidth);
                 bullet.x = int(bullet.x / cellWidth) * cellWidth;
+                excludedPosition = cellWidth / 2 + excluded * (FlxG.width - cellWidth);
+                excludedPosition = int(excludedPosition / cellWidth) * cellWidth;
+                if (bullet.x == excludedPosition) {
+                    bullet.x += cellWidth;
+                }
                 bullet.y = FlxG.height / 2 + (2 - side) * (FlxG.height / 2 + cellWidth);
                 bullet.velocity.y = (side - 2) * bullet.speed;
                 bullet.velocity.x = 0;
@@ -157,36 +177,44 @@ package com.finegamedesign.freedomisboring
         {
             var inCycle:int = lifeTime % 50;
             if (inCycle < 10) {
+                FlxG.bgColor = 0xFFFFD9C6;
                 setBulletSpeed(1.0);
             }
             else if (inCycle < 20) {
+                FlxG.bgColor = 0xFFFDFF97;
                 setBulletSpeed(2.0);
             }
             else if (inCycle < 30) {
+                FlxG.bgColor = 0xFFFFD9C6;
                 setBulletSpeed(1.0);
             }
             else if (inCycle < 40) {
+                FlxG.bgColor = 0xFFEAD2FF;
                 setBulletSpeed(0.5);
             }
         }
 
         private function setBulletSpeed(factor:Number):void
         {
+            player.speed = 2 * cellWidth * factor;
             for (var e:int = 0; e < enemies.members.length; e++) {
-                 bullet.speed = cellWidth * factor;
-                 bullet = enemies.members[e];
-                 if (bullet.velocity.x < 0) {
-                      bullet.velocity.x = -bullet.speed;
-                 }
-                 else if (0 < bullet.velocity.x) {
-                      bullet.velocity.x = bullet.speed;
-                 }
-                 if (bullet.velocity.y < 0) {
-                      bullet.velocity.y = -bullet.speed;
-                 }
-                 else if (0 < bullet.velocity.y) {
-                      bullet.velocity.y = bullet.speed;
-                 }
+                bullet = enemies.members[e];
+                if (null == bullet) {
+                    continue;
+                }
+                bullet.speed = cellWidth * factor;
+                if (bullet.velocity.x < 0) {
+                    bullet.velocity.x = -bullet.speed;
+                }
+                else if (0 < bullet.velocity.x) {
+                    bullet.velocity.x = bullet.speed;
+                }
+                if (bullet.velocity.y < 0) {
+                    bullet.velocity.y = -bullet.speed;
+                }
+                else if (0 < bullet.velocity.y) {
+                    bullet.velocity.y = bullet.speed;
+                }
             }
         }
 
@@ -217,7 +245,7 @@ package com.finegamedesign.freedomisboring
 
         private function lose():void
         {
-            FlxG.timeScale = 1.0;
+            setBulletSpeed(0.25);
             FlxG.playMusic(Sounds.music, 0.0);
             FlxG.resetState();
         }
