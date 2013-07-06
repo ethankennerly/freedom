@@ -5,6 +5,8 @@ package com.finegamedesign.freedomisboring
    
     public class PlayState extends FlxState
     {
+        private static var first:Boolean = true;
+
         private var textColor:uint = 0xFFFFFF;
         private var state:String;
         private var instructionText:FlxText;
@@ -46,20 +48,22 @@ package com.finegamedesign.freedomisboring
                 enemies.add(bullet);
             }
             add(enemies);
-            addHud();
             state = "start";
+            addHud();
+            first = false;
         }
 
         private function addHud():void
         {
             instructionText = new FlxText(0, 0, FlxG.width, 
-                "PRESS ARROW KEY TO DODGE BALLS");
+                first ? "CLICK ANYWHERE"
+                      : "PRESS ARROW KEYS TO DODGE BOXES");
             instructionText.color = textColor;
             instructionText.scrollFactor.x = 0.0;
             instructionText.scrollFactor.y = 0.0;
             instructionText.alignment = "center";
             add(instructionText);
-            scoreText = new FlxText(280, 0, 40, "0");
+            scoreText = new FlxText(FlxG.width - 15, 0, 15, "0");
             scoreText.color = textColor;
             scoreText.scrollFactor.x = 0.0;
             scoreText.scrollFactor.y = 0.0;
@@ -76,12 +80,16 @@ package com.finegamedesign.freedomisboring
                 state = "play";
                 lifeTime = 0.0;
                 spawnTime = 0.0;
+                instructionText.text = "PRESS ARROW KEYS TO DODGE BOXES";
                 FlxG.playMusic(Sounds.music);
             }
             if ("play" == state) {
                 maySpawnBullet();
                 FlxG.overlap(player, enemies, collide);
                 updateHud();
+            }
+            if (60 <= lifeTime) {
+                instructionText.text = "";
             }
             super.update();
         }
@@ -160,6 +168,9 @@ package com.finegamedesign.freedomisboring
          */ 
         private function updateInput():void
         {
+            if (FlxG.mouse.justPressed()) {
+                instructionText.text = "PRESS ARROW KEYS TO DODGE BOXES";
+            }
             mayMovePlayer();
             mayCheat();
         }

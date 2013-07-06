@@ -1,5 +1,5 @@
 TODO
-	read click to start.  read arrow key to move
+	Read click to start.  read arrow key to move.
 	publish web page.
 	score each second
 	get key, arrow appears
@@ -21,6 +21,8 @@ TODO
 	red square approaches quickly and then slows down to close in.
 	high score
 	Layered loop.
+	speed up and slow down time to energy of music.
+
 
 DONE
 
