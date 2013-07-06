@@ -1,5 +1,4 @@
 TODO
-	many rectangles move from any side of screen
 	read click to start.  read arrow key to move
 	publish web page.
 	score each second
@@ -35,7 +34,7 @@ LOG
 6
 	8 press an arrow key to move a square
 	9 If red square hits blue square, restart.
-	10 Many rectangles move from any side of screen?
+	10 Many rectangles move from any side of screen.
 
 
 JOURNAL

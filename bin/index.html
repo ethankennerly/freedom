@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8"/>
+	<meta http-equiv="cache-control" content="no-cache, no-store">
+	<title>Dodge Ball</title>
+	<meta name="description" content="A game made in two days by Ethan Kennerly for MolyJam 2013 (July 5 to 7), music 'Drone Strike' by SEVA" />
+	
+	<script src="js/swfobject.js"></script>
+	<script>
+		var flashvars = {
+		};
+		var params = {
+			menu: "false",
+			scale: "noScale",
+			allowFullscreen: "true",
+			allowScriptAccess: "always",
+			bgcolor: "",
+			wmode: "direct" // can cause issues with FP settings & webcam
+		};
+		var attributes = {
+			id:"freedom"
+		};
+		swfobject.embedSWF(
+			"freedom.swf", 
+			"altContent", "640", "480", "10.0.0", 
+			"expressInstall.swf", 
+			flashvars, params, attributes);
+	</script>
+	<style>
+		html, body { height:100%; }
+		body { margin:0; background:FFFF00}
+	</style>
+</head>
+<body bgcolor=FFD9C6>
+	<div id="altContent">
+		<h1>freedomisboring</h1>
+		<p><a href="http://www.adobe.com/go/getflashplayer">Get Adobe Flash player</a></p>
+	</div>
+
+<pre>
+DODGE BALL
+
+Press an arrow key to dodge the boxes.
+
+Too easy?  Press SHIFT+2 to double the speed.
+Too hard?  Press SHIFT+3 to halve the speed.
+Press SHIFT+1 to return speed to normal.
+
+Press number 0 to mute sound.
+
+"Freedom is... freedom can actually be boring, you've got to realize that." Peter Molyneux
+http://www.molyjam.com/inspirations
+
+A game made in two days by Ethan Kennerly 
+for MolyJam 2013 (June 5 to 7)
+Music "Drone Strike" by SEVA
+at the Freespace and IGN, San Francisco.
+</pre>
+</body>
+</html>

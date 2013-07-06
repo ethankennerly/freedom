@@ -88,9 +88,9 @@ package com.finegamedesign.freedomisboring
 
         private function maySpawnBullet():void
         {
-            if (spawnTime + 1 < lifeTime) {
+            if (spawnTime + 4 < lifeTime) {
                 var startSide:int = FlxG.random() * 4; 
-                for (var b:int = 0; b < lifeTime / 2; b++) {
+                for (var b:int = 0; b < Math.pow(lifeTime, 0.67); b++) {
                     spawnBullet((b + startSide) % 4);
                 }
                 spawnTime = lifeTime;
@@ -106,20 +106,21 @@ package com.finegamedesign.freedomisboring
             }
             var fraction:Number = FlxG.random();
             if (0 == side % 2) {
-                bullet.y = bullet.height / 2 + fraction * (FlxG.height - bullet.height);
-                bullet.x = FlxG.width / 2 + (1 - side) * (FlxG.width / 2 + bullet.width);
+                bullet.y = bullet.frameHeight / 2 + fraction * (FlxG.height - bullet.frameHeight);
+                bullet.y = int(bullet.y / bullet.frameHeight) * bullet.frameHeight;
+                bullet.x = FlxG.width / 2 + (1 - side) * (FlxG.width / 2 + bullet.frameWidth);
                 bullet.velocity.x = (side - 1) * bullet.speed;
                 bullet.velocity.y = 0;
             }
             else {
-                bullet.x = bullet.width / 2 + fraction * (FlxG.width - bullet.width);
-                bullet.y = FlxG.height / 2 + (2 - side) * (FlxG.height / 2 + bullet.height);
+                bullet.x = bullet.frameWidth / 2 + fraction * (FlxG.width - bullet.frameWidth);
+                bullet.x = int(bullet.x / bullet.frameWidth) * bullet.frameWidth;
+                bullet.y = FlxG.height / 2 + (2 - side) * (FlxG.height / 2 + bullet.frameHeight);
                 bullet.velocity.y = (side - 2) * bullet.speed;
                 bullet.velocity.x = 0;
             }
             bullet.revive();
             bullet.solid = false;
-            add(bullet);
         }
 
         private function updateHud():void
@@ -147,7 +148,9 @@ package com.finegamedesign.freedomisboring
 
         private function lose():void
         {
-            FlxG.switchState(new PlayState());
+            FlxG.timeScale = 1.0;
+            FlxG.playMusic(Sounds.music, 0.0);
+            FlxG.resetState();
         }
 
         /**
@@ -177,8 +180,8 @@ package com.finegamedesign.freedomisboring
             if (FlxG.keys.pressed("DOWN") || FlxG.keys.pressed("S")) {
                 player.velocity.y += player.speed;
             }
-            player.x = Math.max(player.width / 2, Math.min(FlxG.width - player.width, player.x));
-            player.y = Math.max(player.height / 2, Math.min(FlxG.height - player.height, player.y));
+            player.x = Math.max(player.frameWidth / 2, Math.min(FlxG.width - player.frameWidth, player.x));
+            player.y = Math.max(player.frameHeight / 2, Math.min(FlxG.height - player.frameHeight, player.y));
         }
 
         private function mayCheat():void

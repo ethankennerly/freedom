@@ -5,7 +5,8 @@ package com.finegamedesign.freedomisboring
     public class Bullet extends FlxSprite
     {
         [Embed(source="../../../../gfx/bullet.png")] internal static var Img:Class;
-        internal var speed:Number = 20;
+        internal var speed:Number; // = 15;
+                                    // 20;
                                     // 40;
                                     // 80;
                                     // 160;  // too fast?
@@ -14,11 +15,8 @@ package com.finegamedesign.freedomisboring
         {
 
             super(X, Y, Img);
-            loadGraphic(Img, true, false, 16, 16, true);
-            width = 0.5 * frameWidth;
-            height = 0.5 * frameWidth;
-            offset.x = width / 2;
-            offset.y = height / 2;
+            // loadGraphic(Img, true, false, 16, 16, true);
+            speed = frameWidth;
         }
         
         override public function update():void 
