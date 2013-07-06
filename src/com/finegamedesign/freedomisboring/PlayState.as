@@ -1,11 +1,14 @@
 package com.finegamedesign.freedomisboring
 {
-    import flash.utils.Dictionary;
     import org.flixel.*;
    
     public class PlayState extends FlxState
     {
         private static var first:Boolean = true;
+        [Embed(source="../../../../gfx/map.png")]
+        private static const Map:Class;
+        [Embed(source="../../../../gfx/tiles.png")]
+        private static const Tiles:Class;
 
         private var textColor:uint = 0xFFFFFF;
         private var state:String;
@@ -15,8 +18,10 @@ package com.finegamedesign.freedomisboring
         private var lifeTime:Number;
         private var spawnTime:Number;
         private var enemies:FlxGroup;
-        private var gibs:FlxEmitter;
         private var bullet:Bullet;
+        private var map:FlxTilemap;
+        // TODO
+        private var gibs:FlxEmitter;
 
         private function createScores():void
         {
@@ -37,6 +42,7 @@ package com.finegamedesign.freedomisboring
         {
             super.create();
             createScores();
+            loadMap();
             player = new Player(FlxG.width / 2, FlxG.height / 2);
             player.y -= player.height / 2;
             player.x -= player.width / 2;
@@ -48,9 +54,16 @@ package com.finegamedesign.freedomisboring
                 enemies.add(bullet);
             }
             add(enemies);
-            state = "start";
             addHud();
+            state = "start";
             first = false;
+        }
+
+        private function loadMap():void
+        {
+            map = new FlxTilemap();
+            map.loadMap(FlxTilemap.imageToCSV(Map), Tiles);
+            add(map);
         }
 
         private function addHud():void
@@ -84,6 +97,7 @@ package com.finegamedesign.freedomisboring
                 FlxG.playMusic(Sounds.music);
             }
             if ("play" == state) {
+                FlxG.collide(player, map);
                 maySpawnBullet();
                 FlxG.overlap(player, enemies, collide);
                 updateHud();

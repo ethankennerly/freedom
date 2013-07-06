@@ -1,7 +1,5 @@
 TODO
-	Read click to start.  read arrow key to move.
-	publish web page.
-	score each second
+	square cannot pass through walls, rectangles can
 	get key, arrow appears
 	goto side of arrow, scroll to screen 2.
 	screen 2: square cannot pass through walls, rectangles can
@@ -37,6 +35,8 @@ LOG
 	8 press an arrow key to move a square
 	9 If red square hits blue square, restart.
 	10 Many rectangles move from any side of screen.
+	11 ...
+	13 Read click to start.  read arrow key to move.
 
 
 JOURNAL
