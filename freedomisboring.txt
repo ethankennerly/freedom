@@ -1,0 +1,32 @@
+
+Boxed In
+	incoming bullets
+	room
+	key
+	bullets pass through walls
+	get key
+	scroll to next area
+
+shadow flies by
+gibs
+tiles destroyed or pierced
+rectilinear, axis aligned bullets and missiles
+
+
+http://www.molyjam.com/inspirations
+
+"Freedom is... freedom can actually be boring, you've got to realize that." Peter Molyneux
+	Mondr
+	geometry wars
+	Orbicular
+	Blossom Bullet hell
+	go in a room to save a family member while drone missiles are launching
+	disperse Droned in Afghanistan
+	missile command
+	The game where the bullets are black or white and you dodge or absorb
+	Right Side of the Road
+	september 12th with drones
+	NSA free time menu selector (God(?) God is watching(?))
+	papers please
+	prison architect
+	Passage
