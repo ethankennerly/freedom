@@ -1,5 +1,4 @@
 TODO
-	if red square hits blue square, restart
 	many rectangles move from any side of screen
 	read click to start.  read arrow key to move
 	publish web page.
@@ -22,6 +21,7 @@ TODO
 	chased by red square. rectangle destroys and scores red square.
 	red square approaches quickly and then slows down to close in.
 	high score
+	Layered loop.
 
 DONE
 
@@ -35,6 +35,7 @@ LOG
 6
 	8 press an arrow key to move a square
 	9 If red square hits blue square, restart.
+	10 Many rectangles move from any side of screen?
 
 
 JOURNAL
@@ -78,3 +79,14 @@ Fri 07/05/2013
 X marks the spot.  that is the only safe spot.  follow it quickly in order.  it is the only path in the bullet maze.
 
 Layered loop.
+
+
+Sat 07/06/2013 
+09:56
+
+	10 Many rectangles move from any side of screen?
+
+random side, random position.
+sum of seconds loops.
+offset quarter second between loop.
+

@@ -18,12 +18,13 @@ package com.finegamedesign.freedomisboring
 
         private function createScores():void
         {
-            FlxG.stage.frameRate = 60;
-            FlxG.bgColor = 0xFFFFD9C6;
             if (null == FlxG.scores || FlxG.scores.length <= 0) {
                 FlxG.scores = [0];
                 FlxG.score = 0;
-                FlxG.playMusic(Sounds.music);
+                FlxG.flashFramerate = 60;
+                FlxG.bgColor = 0xFFFFD9C6;
+                // FlxG.visualDebug = true;
+                FlxG.worldBounds = new FlxRect(0, 0, 1280, 960);
             }
             else {
                 FlxG.scores.push(FlxG.score);
@@ -34,15 +35,12 @@ package com.finegamedesign.freedomisboring
         {
             super.create();
             createScores();
-            // FlxG.visualDebug = true;
-            FlxG.worldBounds = new FlxRect(0, 0, 1280, 960);
-            FlxG.stage.frameRate = 60;
             player = new Player(FlxG.width / 2, FlxG.height / 2);
             player.y -= player.height / 2;
             player.x -= player.width / 2;
             add(player);
             enemies = new FlxGroup();
-            for (var concurrentBullet:int = 0; concurrentBullet < 64; concurrentBullet++) {
+            for (var concurrentBullet:int = 0; concurrentBullet < 128; concurrentBullet++) {
                 bullet = new Bullet();
                 bullet.exists = false;
                 enemies.add(bullet);
@@ -55,7 +53,7 @@ package com.finegamedesign.freedomisboring
         private function addHud():void
         {
             instructionText = new FlxText(0, 0, FlxG.width, 
-                "PRESS ARROW KEY TO DODGE BULLETS");
+                "PRESS ARROW KEY TO DODGE BALLS");
             instructionText.color = textColor;
             instructionText.scrollFactor.x = 0.0;
             instructionText.scrollFactor.y = 0.0;
@@ -78,6 +76,7 @@ package com.finegamedesign.freedomisboring
                 state = "play";
                 lifeTime = 0.0;
                 spawnTime = 0.0;
+                FlxG.playMusic(Sounds.music);
             }
             if ("play" == state) {
                 maySpawnBullet();
@@ -90,19 +89,35 @@ package com.finegamedesign.freedomisboring
         private function maySpawnBullet():void
         {
             if (spawnTime + 1 < lifeTime) {
-                spawnBullet();
+                var startSide:int = FlxG.random() * 4; 
+                for (var b:int = 0; b < lifeTime / 2; b++) {
+                    spawnBullet((b + startSide) % 4);
+                }
                 spawnTime = lifeTime;
             }
         }
 
-        private function spawnBullet():void
+        private function spawnBullet(side:int):void
         {
-            FlxG.log("spawnBullet");
             bullet = Bullet(enemies.getFirstAvailable());
+            if (bullet == null)
+            {
+                return;
+            }
+            var fraction:Number = FlxG.random();
+            if (0 == side % 2) {
+                bullet.y = bullet.height / 2 + fraction * (FlxG.height - bullet.height);
+                bullet.x = FlxG.width / 2 + (1 - side) * (FlxG.width / 2 + bullet.width);
+                bullet.velocity.x = (side - 1) * bullet.speed;
+                bullet.velocity.y = 0;
+            }
+            else {
+                bullet.x = bullet.width / 2 + fraction * (FlxG.width - bullet.width);
+                bullet.y = FlxG.height / 2 + (2 - side) * (FlxG.height / 2 + bullet.height);
+                bullet.velocity.y = (side - 2) * bullet.speed;
+                bullet.velocity.x = 0;
+            }
             bullet.revive();
-            bullet.y = FlxG.height / 2 - bullet.height / 2;
-            bullet.x = FlxG.width + bullet.width;
-            bullet.velocity.x = -bullet.speed;
             bullet.solid = false;
             add(bullet);
         }
