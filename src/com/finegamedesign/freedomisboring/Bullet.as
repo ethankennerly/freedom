@@ -4,24 +4,27 @@ package com.finegamedesign.freedomisboring
 
     public class Bullet extends FlxSprite
     {
-        [Embed(source="../../../../gfx/car.png")] internal static var Img:Class;
+        [Embed(source="../../../../gfx/bullet.png")] internal static var Img:Class;
         internal var speed:Number = 160;
 
         public function Bullet(X:int = 0, Y:int = 0, ImgClass:Class = null) 
         {
 
             super(X, Y, Img);
-            loadGraphic(Img, true, false, 628 / 4, 81, true);
-            width = 0.25 * frameWidth;
+            loadGraphic(Img, true, false, 16, 16, true);
+            width = 0.5 * frameWidth;
+            height = 0.5 * frameWidth;
         }
         
         override public function update():void 
         {
-            if (x < -frameWidth) {
-                kill();
-            }
-            else if (solid && alive && x < FlxG.width) {
+            if (onScreen() && !solid)
+            {
+                solid = true;
                 FlxG.play(Sounds.bullet);
+            }
+            else if (solid && alive && !onScreen()) {
+                kill();
             }
             super.update();
         }

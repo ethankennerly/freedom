@@ -1,10 +1,9 @@
 TODO
-	press an arrow key to move a square
-	if thin rectangle hits square, restart
+	if red square hits blue square, restart
 	many rectangles move from any side of screen
 	read click to start.  read arrow key to move
 	publish web page.
-	score keys picked up
+	score each second
 	get key, arrow appears
 	goto side of arrow, scroll to screen 2.
 	screen 2: square cannot pass through walls, rectangles can
@@ -22,7 +21,8 @@ TODO
 	missile explodes
 	chased by red square. rectangle destroys and scores red square.
 	red square approaches quickly and then slows down to close in.
-	
+	high score
+
 DONE
 
 LOG
@@ -33,7 +33,8 @@ LOG
 	21 >>>
 	22 press up or down. car drifts.
 6
-	8
+	8 press an arrow key to move a square
+	9 If red square hits blue square, restart.
 
 
 JOURNAL
