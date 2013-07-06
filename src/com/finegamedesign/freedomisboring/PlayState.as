@@ -18,6 +18,7 @@ package com.finegamedesign.freedomisboring
         private var lifeTime:Number;
         private var spawnTime:Number;
         private var enemies:FlxGroup;
+        private var cellWidth:int;
         private var bullet:Bullet;
         private var map:FlxTilemap;
         // TODO
@@ -42,7 +43,7 @@ package com.finegamedesign.freedomisboring
         {
             super.create();
             createScores();
-            loadMap();
+            // loadMap();
             player = new Player(FlxG.width / 2, FlxG.height / 2);
             player.y -= player.height / 2;
             player.x -= player.width / 2;
@@ -53,12 +54,16 @@ package com.finegamedesign.freedomisboring
                 bullet.exists = false;
                 enemies.add(bullet);
             }
+            cellWidth = bullet.frameWidth;
             add(enemies);
             addHud();
             state = "start";
             first = false;
         }
 
+        /**
+         * Annoyed me.
+         */
         private function loadMap():void
         {
             map = new FlxTilemap();
@@ -76,7 +81,7 @@ package com.finegamedesign.freedomisboring
             instructionText.scrollFactor.y = 0.0;
             instructionText.alignment = "center";
             add(instructionText);
-            scoreText = new FlxText(FlxG.width - 15, 0, 15, "0");
+            scoreText = new FlxText(FlxG.width - 30, 0, 30, "0");
             scoreText.color = textColor;
             scoreText.scrollFactor.x = 0.0;
             scoreText.scrollFactor.y = 0.0;
@@ -99,6 +104,7 @@ package com.finegamedesign.freedomisboring
             if ("play" == state) {
                 FlxG.collide(player, map);
                 maySpawnBullet();
+                updateBulletSpeed();
                 FlxG.overlap(player, enemies, collide);
                 updateHud();
             }
@@ -108,11 +114,13 @@ package com.finegamedesign.freedomisboring
             super.update();
         }
 
+        // bullet
+
         private function maySpawnBullet():void
         {
             if (spawnTime + 4 < lifeTime) {
-                var startSide:int = FlxG.random() * 4; 
-                for (var b:int = 0; b < Math.pow(lifeTime, 0.67); b++) {
+                var startSide:int = (lifeTime / 4) % 4; 
+                for (var b:Number = 0; b < Math.pow(lifeTime, 0.67); b += FlxG.timeScale) {
                     spawnBullet((b + startSide) % 4);
                 }
                 spawnTime = lifeTime;
@@ -128,22 +136,61 @@ package com.finegamedesign.freedomisboring
             }
             var fraction:Number = FlxG.random();
             if (0 == side % 2) {
-                bullet.y = bullet.frameHeight / 2 + fraction * (FlxG.height - bullet.frameHeight);
-                bullet.y = int(bullet.y / bullet.frameHeight) * bullet.frameHeight;
-                bullet.x = FlxG.width / 2 + (1 - side) * (FlxG.width / 2 + bullet.frameWidth);
+                bullet.y = cellWidth / 2 + fraction * (FlxG.height - cellWidth);
+                bullet.y = int(bullet.y / cellWidth) * cellWidth;
+                bullet.x = FlxG.width / 2 + (1 - side) * (FlxG.width / 2 + cellWidth);
                 bullet.velocity.x = (side - 1) * bullet.speed;
                 bullet.velocity.y = 0;
             }
             else {
-                bullet.x = bullet.frameWidth / 2 + fraction * (FlxG.width - bullet.frameWidth);
-                bullet.x = int(bullet.x / bullet.frameWidth) * bullet.frameWidth;
-                bullet.y = FlxG.height / 2 + (2 - side) * (FlxG.height / 2 + bullet.frameHeight);
+                bullet.x = cellWidth / 2 + fraction * (FlxG.width - cellWidth);
+                bullet.x = int(bullet.x / cellWidth) * cellWidth;
+                bullet.y = FlxG.height / 2 + (2 - side) * (FlxG.height / 2 + cellWidth);
                 bullet.velocity.y = (side - 2) * bullet.speed;
                 bullet.velocity.x = 0;
             }
             bullet.revive();
             bullet.solid = false;
         }
+
+        private function updateBulletSpeed():void
+        {
+            var inCycle:int = lifeTime % 50;
+            if (inCycle < 10) {
+                setBulletSpeed(1.0);
+            }
+            else if (inCycle < 20) {
+                setBulletSpeed(2.0);
+            }
+            else if (inCycle < 30) {
+                setBulletSpeed(1.0);
+            }
+            else if (inCycle < 40) {
+                setBulletSpeed(0.5);
+            }
+        }
+
+        private function setBulletSpeed(factor:Number):void
+        {
+            for (var e:int = 0; e < enemies.members.length; e++) {
+                 bullet.speed = cellWidth * factor;
+                 bullet = enemies.members[e];
+                 if (bullet.velocity.x < 0) {
+                      bullet.velocity.x = -bullet.speed;
+                 }
+                 else if (0 < bullet.velocity.x) {
+                      bullet.velocity.x = bullet.speed;
+                 }
+                 if (bullet.velocity.y < 0) {
+                      bullet.velocity.y = -bullet.speed;
+                 }
+                 else if (0 < bullet.velocity.y) {
+                      bullet.velocity.y = bullet.speed;
+                 }
+            }
+        }
+
+        // end bullet
 
         private function updateHud():void
         {

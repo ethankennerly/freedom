@@ -1,15 +1,10 @@
 TODO
-	square cannot pass through walls, rectangles can
-	get key, arrow appears
-	goto side of arrow, scroll to screen 2.
-	screen 2: square cannot pass through walls, rectangles can
-	screen 3: corridor. dodge rectangles
+	vary speed and density.
 	square adventurer walks and taps
 	see icon of arrow keys
 	lasers fire and hiss
 	being hit gibs, explosion, camera shake
 	dust monochrome
-	hear key pickup
 	hear hit
 	hear music
 	see foreshadow
@@ -20,6 +15,11 @@ TODO
 	high score
 	Layered loop.
 	speed up and slow down time to energy of music.
+	get key, arrow appears
+	goto side of arrow, scroll to screen 2.
+	screen 2: square cannot pass through walls, rectangles can
+	screen 3: corridor. dodge rectangles
+	hear key pickup
 
 
 DONE
@@ -90,4 +90,8 @@ Sat 07/06/2013
 random side, random position.
 sum of seconds loops.
 offset quarter second between loop.
+
+Release key. snap to cell
+wierd.
+
 
