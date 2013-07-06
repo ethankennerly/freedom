@@ -4,19 +4,20 @@ package com.finegamedesign.freedomisboring
 
     public class Player extends FlxSprite
     {
-        [Embed(source="../../../../gfx/car.png")] internal static var Img:Class;
+        [Embed(source="../../../../gfx/player.png")] internal static var Img:Class;
+        internal var speed:Number = 160;
 
         public function Player(X:int = 0, Y:int = 0, ImgClass:Class = null) 
         {
             super(X, Y, Img);
             width *= 0.5;
             height *= 0.5;
-            loadGraphic(Img, true, false, 129, 46, true);
-            addAnimation("left", [0], 30, true);
-            addAnimation("right", [1], 30, true);
-            addAnimation("collide", [2], 30, true);
-            addAnimation("idle", [3, 4, 5, 6], 30, true);
-            play("idle");
+            loadGraphic(Img, true, false, 16, 16, true);
+            //+ addAnimation("left", [0], 30, true);
+            //+ addAnimation("right", [1], 30, true);
+            //+ addAnimation("collide", [2], 30, true);
+            //+ addAnimation("idle", [3, 4, 5, 6], 30, true);
+            //+ play("idle");
         }
     }
 }

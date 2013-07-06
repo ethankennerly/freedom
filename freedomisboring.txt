@@ -1,3 +1,42 @@
+TODO
+	press an arrow key to move a square
+	if thin rectangle hits square, restart
+	many rectangles move from any side of screen
+	read click to start.  read arrow key to move
+	publish web page.
+	score keys picked up
+	get key, arrow appears
+	goto side of arrow, scroll to screen 2.
+	screen 2: square cannot pass through walls, rectangles can
+	screen 3: corridor. dodge rectangles
+	square adventurer walks and taps
+	see icon of arrow keys
+	lasers fire and hiss
+	being hit gibs, explosion, camera shake
+	dust monochrome
+	hear key pickup
+	hear hit
+	hear music
+	see foreshadow
+	missile hisses
+	missile explodes
+	chased by red square. rectangle destroys and scores red square.
+	red square approaches quickly and then slows down to close in.
+	
+DONE
+
+LOG
+
+5
+	19 >>>
+	20 >>>
+	21 >>>
+	22 press up or down. car drifts.
+6
+	8
+
+
+JOURNAL
 
 Boxed In
 	incoming bullets
@@ -30,3 +69,11 @@ http://www.molyjam.com/inspirations
 	papers please
 	prison architect
 	Passage
+
+
+Fri 07/05/2013 
+22:01
+
+X marks the spot.  that is the only safe spot.  follow it quickly in order.  it is the only path in the bullet maze.
+
+Layered loop.
