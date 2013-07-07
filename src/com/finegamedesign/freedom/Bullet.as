@@ -12,8 +12,8 @@ package com.finegamedesign.freedom
             super(X, Y, Img);
             // loadGraphic(Img, true, false, 16, 16, true);
             speed = frameWidth;
-            width = 0.9 * frameWidth;
-            height = 0.9 * frameHeight;
+            width = 0.95 * frameWidth;
+            height = 0.95 * frameHeight;
             offset.x = 0.5 * (frameWidth - width);
             offset.y = 0.5 * (frameHeight - height);
         }

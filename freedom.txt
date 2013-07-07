@@ -1,6 +1,4 @@
 TODO
-	simeon may expect to escape night phase
-	if at corner of drone, dodge.
 	square adventurer; person to rescue. walks and taps.
 	Sync speed to intensity of music (Drone Strike by SEVA).
 	see icon of arrow keys

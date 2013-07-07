@@ -11,8 +11,8 @@ package com.finegamedesign.freedom
         public function Player(X:int = 0, Y:int = 0, ImgClass:Class = null) 
         {
             super(X, Y, Img);
-            width = 0.5 * frameWidth;
-            height = 0.5 * frameHeight;
+            width = 1.0 * frameWidth;
+            height = 1.0 * frameHeight;
             offset.x = 0.5 * (frameWidth - width);
             offset.y = 0.5 * (frameHeight - height);
             // loadGraphic(Img, true, false, 16, 16, true);

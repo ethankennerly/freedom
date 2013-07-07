@@ -20,6 +20,7 @@ package com.finegamedesign.freedom
 
         private var state:String;
         private var instructionText:FlxText;
+        private var titleText:FlxText;
         private var scoreText:FlxText;
         private var player:Player;
         private var lifeTime:Number;
@@ -71,7 +72,8 @@ package com.finegamedesign.freedom
             player.x -= player.width / 2;
             add(player);
             enemies = new FlxGroup();
-            for (var concurrentBullet:int = 0; concurrentBullet < 96; concurrentBullet++) {
+            var maxBullets:int = 80;
+            for (var concurrentBullet:int = 0; concurrentBullet < maxBullets; concurrentBullet++) {
                 bullet = new Bullet();
                 bullet.exists = false;
                 enemies.add(bullet);
@@ -95,6 +97,13 @@ package com.finegamedesign.freedom
 
         private function addHud():void
         {
+            titleText = new FlxText(0, FlxG.height / 3, FlxG.width, 
+                "SHADOW OF THE DRONES\n\nMUSIC BY SEVA\n\nGAME BY ETHAN KENNERLY");
+            titleText.color = textColor;
+            titleText.scrollFactor.x = 0.0;
+            titleText.scrollFactor.y = 0.0;
+            titleText.alignment = "center";
+            add(titleText);
             instructionText = new FlxText(0, 0, FlxG.width, 
                 first ? "CLICK HERE"
                       : "PRESS ARROW KEYS TO PICKUP SURVIVORS");
@@ -119,6 +128,7 @@ package com.finegamedesign.freedom
             {
                 state = "pickup";
                 instructionText.text = "PRESS ARROW KEYS TO RESCUE SURVIVORS";
+                titleText.text = "";
             }
             if ("play" == state) {
                 FlxG.collide(player, map);
@@ -459,13 +469,13 @@ package com.finegamedesign.freedom
                      && Math.abs(player.y - rowSincePickup[y]) < cellWidth) {
                         continue;
                     }
-                    if (8 <= rowSincePickup[y] + columnSincePickup[x]) {
+                    if (5 <= rowSincePickup[y] + columnSincePickup[x]) {
                         pickup = Pickup(pickups.getFirstAvailable());
                         if (null == pickup) {
                             pickup = pickups.members[int(FlxG.random() * pickups.members.length)];
                         }
-                        pickup.x = int(x + cellWidth / 2);
-                        pickup.y = int(y + cellWidth / 2);
+                        pickup.x = int(x + cellWidth / 2 - pickup.frameWidth / 2);
+                        pickup.y = int(y + cellWidth / 2 - pickup.frameWidth / 2);
                         pickup.duration = 16.0;
                         pickup.revive();
                         rowSincePickup[y] = 0;
@@ -524,13 +534,17 @@ package com.finegamedesign.freedom
             scoreText.text = FlxG.score.toString();
         }
 
+        /**
+         * 13/7/7 Head in shadow of drone.  Simeon expects to fix.
+         */
         private function collide(me:FlxObject, you:FlxObject):void
         {
             var enemy:FlxSprite = FlxSprite(you);
             var player:Player = Player(me);
-            var my:FlxPoint = new FlxPoint(player.x, player.y);
-            var yours:FlxPoint = new FlxPoint(you.x, you.y);
-            if (0.7 * enemy.frameWidth < FlxU.getDistance(my, yours)) {
+            var my:FlxPoint = new FlxPoint(player.x + player.offset.x, player.y + player.offset.y);
+            var yours:FlxPoint = new FlxPoint(enemy.x + enemy.offset.x, player.y + enemy.offset.y);
+            if (0.5 * (enemy.frameWidth + player.frameWidth) < FlxU.getDistance(my, yours)) {
+                // FlxG.log("collide " + FlxU.getDistance(my, yours).toFixed(2));
                 return;
             }
             player.hurt(1);
@@ -564,6 +578,7 @@ package com.finegamedesign.freedom
         private function updateInput():void
         {
             if (FlxG.mouse.justPressed()) {
+                titleText.text = "";
                 instructionText.text = "PRESS ARROW KEYS TO RESCUE SURVIVORS";
                 FlxG.play(Sounds.start);
             }
