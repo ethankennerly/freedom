@@ -86,7 +86,7 @@ package com.finegamedesign.freedom
         {
             instructionText = new FlxText(0, 0, FlxG.width, 
                 first ? "CLICK HERE"
-                      : "PRESS ARROW KEYS TO PICKUP POINTS");
+                      : "PRESS ARROW KEYS TO PICKUP SURVIVORS");
             instructionText.color = textColor;
             instructionText.scrollFactor.x = 0.0;
             instructionText.scrollFactor.y = 0.0;
@@ -107,7 +107,7 @@ package com.finegamedesign.freedom
             if ("start" == state && (player.velocity.x != 0.0 || player.velocity.y != 0.0))
             {
                 state = "pickup";
-                instructionText.text = "PRESS ARROW KEYS TO PICKUP POINTS";
+                instructionText.text = "PRESS ARROW KEYS TO RESCUE SURVIVORS";
             }
             if ("play" == state) {
                 FlxG.collide(player, map);
@@ -167,9 +167,10 @@ package com.finegamedesign.freedom
         private var columnDeck:Array = [];
 
         /**
-         * Gap always exists that follows a random walk.
+         * Two gaps always exists that follows a random walk.
          * Example: 13/7/6 Invincible, speed x8. Play 400 seconds. Speed x1. 
          * Play 120 seconds.  Expect no solid wall.  Repeat twice.
+         * Translucent.  Play 40 seconds.  Do not see two on top of each other.
          */
         private function spawnBullet(side:int, excludedRow:Number, excludedColumn:Number):Bullet
         {
@@ -178,8 +179,6 @@ package com.finegamedesign.freedom
             {
                 return null;
             }
-            bullet.revive();
-            bullet.solid = false;
             if (0 == side % 2) {
                 bullet.y = drawCard(rowDeck, cellWidth, FlxG.height, excludedRow);
                 bullet.x = FlxG.width / 2 + (1 - side) * (FlxG.width / 2 + cellWidth);
@@ -192,19 +191,31 @@ package com.finegamedesign.freedom
                 bullet.velocity.y = (side - 2) * bullet.speed;
                 bullet.velocity.x = 0;
             }
+            var other:Bullet;
+            for (var e:int = 0; e < enemies.members.length; e++) {
+                other = enemies.members[e];
+                if (other != bullet && other.x == bullet.x && other.y == bullet.y) {
+                    return null;
+                }
+            }
+            bullet.revive();
+            bullet.solid = false;
             return bullet;
         }
 
         /**
-         * Random position, except not at excluded.
+         * Random position, except not at excluded or half away from excluded.
          * Excluded never at edge, because cannot see what may emerge from offscreen.
-         * Expects width greater than 2 cellWidth.
+         * Expects width greater than 5 cellWidth.
          */
         private function drawCard(deck:Array, cellWidth:int, width:int, excluded:Number):int
         {
             var excludedPosition:int = excluded * (width - 3 * cellWidth) + cellWidth;
             excludedPosition = int(excludedPosition / cellWidth) * cellWidth;
-            if (deck.length <= 0 || (deck.length == 1 && deck[0] == excludedPosition)) {
+            var excludedPosition1:int = ((0.5 + excluded) - Math.floor(0.5 + excluded)) 
+                * (width - 3 * cellWidth) + cellWidth;
+            excludedPosition1 = int(excludedPosition / cellWidth) * cellWidth;
+            if (deck.length <= 2) {
                 deck = [];
                 for (var position:int = 0; position <= width - cellWidth / 2; position += cellWidth) {
                     deck.push(position);
@@ -221,7 +232,7 @@ package com.finegamedesign.freedom
             var draw:int = deck.pop();
             if (draw == excludedPosition) {
                 draw = deck.pop();
-                deck.push(excludedPosition);
+                deck.unshift(excludedPosition);
             }
             if (draw == excludedPosition) {
                 throw new Error("Expected not excluded " + excluded + " deck " + deck);
@@ -464,7 +475,7 @@ package com.finegamedesign.freedom
             var picked:Pickup = Pickup(you);
             picked.kill();
             if (FlxG.score == 1) {
-                instructionText.text = "DODGE BOXES";
+                instructionText.text = "DODGE DRONES";
                 lifeTime = 0.0;
                 spawnTime = 0.0;
                 FlxG.playMusic(Sounds.music);
@@ -486,14 +497,18 @@ package com.finegamedesign.freedom
         {
             var player:Player = Player(me);
             var enemy:FlxSprite = FlxSprite(you);
+            player.hurt(1);
             enemy.solid = false;
+            if (1 <= player.health) {
+                return;
+            }
             FlxG.timeScale = 1.0;
             //+ player.play("collide");
             player.velocity.x = 0.0;
             player.velocity.y = 0.0;
             FlxG.play(Sounds.explosion);
             FlxG.camera.shake(0.05, 0.5, null, false, FlxCamera.SHAKE_HORIZONTAL_ONLY);
-            instructionText.text = "YOU WERE HIT";
+            instructionText.text = "A DRONE SHOT YOU";
             FlxG.fade(0xFF000000, 4.0, lose);
             state = "lose";
         }
@@ -513,7 +528,7 @@ package com.finegamedesign.freedom
         private function updateInput():void
         {
             if (FlxG.mouse.justPressed()) {
-                instructionText.text = "PRESS ARROW KEYS TO PICKUP POINTS";
+                instructionText.text = "PRESS ARROW KEYS TO RESCUE SURVIVORS";
                 FlxG.play(Sounds.start);
             }
             mayMovePlayer();
@@ -553,8 +568,8 @@ package com.finegamedesign.freedom
                     FlxG.timeScale *= 0.5;
                 }
                 else if (FlxG.keys.justPressed("NINE")) {
-                    player.solid = !player.solid;
-                    player.alpha = 0.5 + (player.solid ? 0.5 : 0.0);
+                    player.health = player.health < 2 ? int.MAX_VALUE : 1;
+                    player.alpha = 0.5 + (player.health < 2 ? 0.5 : 0.0);
                 }
             }
         }

@@ -1,5 +1,4 @@
 TODO
-	do not spawn point or exclude edge
 	Sync speed to intensity of music (Drone Strike by SEVA).
 	square adventurer walks and taps
 	see icon of arrow keys
