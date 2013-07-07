@@ -2,6 +2,8 @@ package com.finegamedesign.freedom
 {
     import flash.display.Bitmap;
     import flash.geom.Rectangle;
+    import flash.utils.Dictionary;
+
     import org.flixel.*;
    
     public class PlayState extends FlxState
@@ -31,7 +33,6 @@ package com.finegamedesign.freedom
         {
             if (null == FlxG.scores || FlxG.scores.length <= 0) {
                 FlxG.scores = [0];
-                FlxG.score = 0;
                 FlxG.flashFramerate = 60;
                 var paletteImage:Bitmap = new Palette();
                 palette = paletteImage.bitmapData.getVector(
@@ -44,12 +45,14 @@ package com.finegamedesign.freedom
             else {
                 FlxG.scores.push(FlxG.score);
             }
+            FlxG.score = 0;
         }
 
         override public function create():void
         {
             super.create();
             createScores();
+            pickupInit();
             // loadMap();
             tweenBgColor(0xFFFFD9C6, 1.0);
             player = new Player(FlxG.width / 2, FlxG.height / 2);
@@ -83,7 +86,7 @@ package com.finegamedesign.freedom
         {
             instructionText = new FlxText(0, 0, FlxG.width, 
                 first ? "CLICK HERE"
-                      : "PRESS ARROW KEYS TO DODGE BOXES");
+                      : "PRESS ARROW KEYS TO PICKUP POINTS");
             instructionText.color = textColor;
             instructionText.scrollFactor.x = 0.0;
             instructionText.scrollFactor.y = 0.0;
@@ -104,16 +107,15 @@ package com.finegamedesign.freedom
             if ("start" == state && (player.velocity.x != 0.0 || player.velocity.y != 0.0))
             {
                 state = "play";
-                lifeTime = 0.0;
-                spawnTime = 0.0;
-                instructionText.text = "PRESS ARROW KEYS TO DODGE BOXES";
-                FlxG.playMusic(Sounds.music);
+                instructionText.text = "PRESS ARROW KEYS TO PICKUP POINTS";
             }
             if ("play" == state) {
                 FlxG.collide(player, map);
                 maySpawnBullet();
                 updateBulletSpeed();
+                updatePickup();
                 FlxG.overlap(player, enemies, collide);
+                FlxG.overlap(player, pickups, scoreUp);
                 updateHud();
             }
             if (60 <= lifeTime) {
@@ -128,16 +130,23 @@ package com.finegamedesign.freedom
         private var lastExcludedRow:Number = 0.5;
         private var lastExcludedColumn:Number = 0.5;
 
+        /**
+         * 13/7/6 Simeon may expect density increases rapidly.
+         */
         private function maySpawnBullet():void
         {
+            lifeTime += FlxG.elapsed;
             if (spawnTime + 4 < lifeTime) {
-                var startSide:int = (lifeTime / 4) % 4; 
-                for (var b:Number = 0; b < Math.pow(lifeTime, 0.67); b += speedFactor) {
-                    spawnBullet((b + startSide) % 4, lastExcludedRow, lastExcludedColumn);
+                var startSide:int = (lifeTime / 4) % 4;
+                var count:Number = Math.pow(FlxG.score * 10, 0.75);
+                for (var b:Number = 0; b < count; b += speedFactor) {
+                    bullet = spawnBullet((b + startSide) % 4, lastExcludedRow, lastExcludedColumn);
+                    countPickup(bullet, ((b + startSide) % 2) == 0);
                 }
                 spawnTime = lifeTime;
                 lastExcludedRow = randomWalk(lastExcludedRow, cellWidth / FlxG.height);
                 lastExcludedColumn = randomWalk(lastExcludedColumn, cellWidth / FlxG.width);
+                FlxG.log("spawn " + count.toFixed(2) + " ex " + lastExcludedRow.toFixed(2) + "," + lastExcludedColumn.toFixed(2));
             }
         }
 
@@ -165,12 +174,12 @@ package com.finegamedesign.freedom
          * Example: 13/7/6 Invincible, speed x8. Play 400 seconds. Speed x1. 
          * Play 120 seconds.  Expect no solid wall.  Repeat twice.
          */
-        private function spawnBullet(side:int, excludedRow:Number, excludedColumn:Number):void
+        private function spawnBullet(side:int, excludedRow:Number, excludedColumn:Number):Bullet
         {
             bullet = Bullet(enemies.getFirstAvailable());
             if (bullet == null)
             {
-                return;
+                return null;
             }
             bullet.revive();
             bullet.solid = false;
@@ -186,6 +195,7 @@ package com.finegamedesign.freedom
                 bullet.velocity.y = (side - 2) * bullet.speed;
                 bullet.velocity.x = 0;
             }
+            return bullet;
         }
 
         /**
@@ -218,7 +228,7 @@ package com.finegamedesign.freedom
             if (draw == excludedPosition) {
                 throw new Error("Expected not excluded " + excluded + " deck " + deck);
             }
-            FlxG.log("drawCard: " + draw.toString() + " ex " + excludedPosition);
+            // FlxG.log("drawCard: " + draw.toString() + " ex " + excludedPosition);
             return draw;
         }
 
@@ -304,7 +314,7 @@ package com.finegamedesign.freedom
         private function setBulletSpeed(factor:Number):void
         {
             speedFactor = factor;
-            player.speed = 2 * cellWidth * factor;
+            // player.speed = 2 * cellWidth * factor;
             for (var e:int = 0; e < enemies.members.length; e++) {
                 bullet = enemies.members[e];
                 if (null == bullet) {
@@ -328,10 +338,124 @@ package com.finegamedesign.freedom
 
         // end bullet
 
+        // pickup
+
+        private var rowSincePickup:Dictionary;
+        private var columnSincePickup:Dictionary;
+        private var pickups:FlxGroup;
+        private var pickup:Pickup;
+
+        private function pickupInit():void
+        {
+            rowSincePickup = new Dictionary();
+            columnSincePickup = new Dictionary();
+            pickups = new FlxGroup();
+            for (var concurrentPickup:int = 0; concurrentPickup < 16; concurrentPickup++) {
+                pickup = new Pickup();
+                if (concurrentPickup < 4) {
+                    pickup.x = FlxG.width * (0.25 + 0.5 * (concurrentPickup % 2));
+                    pickup.y = FlxG.height * (0.25 + 0.5 * int(concurrentPickup / 2));
+                    pickup.revive();
+                }
+                else {
+                    pickup.exists = false;
+                }
+                pickups.add(pickup);
+                
+            }
+            add(pickups);
+        }
+
+        private function countPickup(bullet:Bullet, horizontal:Boolean):void
+        {
+            if (null == bullet) {
+                return;
+            }
+            var sincePickup:Dictionary;
+            var value:int;
+            if (horizontal) {
+                sincePickup = rowSincePickup;
+                value = bullet.y;
+            }
+            else {
+                sincePickup = columnSincePickup;
+                value = bullet.x;
+            }
+            if (!(value in sincePickup)) {
+                sincePickup[value] = 0;
+            }
+            sincePickup[value] ++;
+        }
+
+        private function updatePickup():void
+        {
+            maySpawnPickup();
+            mayKillPickup();
+        }
+
+        private function maySpawnPickup():void
+        {
+            for (var y:* in rowSincePickup) {
+                for (var x:* in columnSincePickup) {
+                    if (Math.abs(player.x - columnSincePickup[x]) < cellWidth
+                     && Math.abs(player.y - rowSincePickup[y]) < cellWidth) {
+                        continue;
+                    }
+                    if (8 <= rowSincePickup[y] + columnSincePickup[x]) {
+                        pickup = Pickup(pickups.getFirstAvailable());
+                        if (null == pickup) {
+                            pickup = pickups.members[int(FlxG.random() * pickups.members.length)];
+                        }
+                        pickup.x = int(x + cellWidth / 2);
+                        pickup.y = int(y + cellWidth / 2);
+                        pickup.duration = 16.0;
+                        pickup.revive();
+                        rowSincePickup[y] = 0;
+                        columnSincePickup[x] = 0;
+                    }
+                }
+            }
+        }
+
+        private function mayKillPickup():void
+        {
+            for (var p:int = 0; p < pickups.members.length; p++) {
+                pickup = pickups.members[p];
+                if (pickup.alive) {
+                    pickup.duration -= FlxG.elapsed;
+                    if (pickup.duration <= 0.0) {
+                        pickup.kill();
+                        pickup.exists = false;
+                    }
+                    else if (pickup.duration <= 4.0) {
+                        if (!pickup.flickering) {
+                            pickup.flicker(4.0);
+                        }
+                    }
+                }
+            }
+        }
+
+        private function scoreUp(me:FlxObject, you:FlxObject):void
+        {
+            var player:Player = Player(me);
+            var picked:Pickup = Pickup(you);
+            picked.kill();
+            if (FlxG.score == 0) {
+                instructionText.text = "PRESS ARROW KEYS TO DODGE BOXES";
+                lifeTime = 0.0;
+                spawnTime = 0.0;
+                FlxG.playMusic(Sounds.music);
+            }
+            FlxG.score += 1;
+            FlxG.play(Sounds.pickup);
+        }
+
+        // end pickup
+
         private function updateHud():void
         {
-            lifeTime += FlxG.elapsed;
-            FlxG.score = int(lifeTime);
+            // FlxG.score = int(lifeTime);
             scoreText.text = FlxG.score.toString();
         }
 
@@ -366,7 +490,8 @@ package com.finegamedesign.freedom
         private function updateInput():void
         {
             if (FlxG.mouse.justPressed()) {
-                instructionText.text = "PRESS ARROW KEYS TO DODGE BOXES";
+                instructionText.text = "PRESS ARROW KEYS TO PICKUP POINTS";
+                FlxG.play(Sounds.start);
             }
             mayMovePlayer();
             mayCheat();

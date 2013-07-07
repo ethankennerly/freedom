@@ -144,6 +144,12 @@ The center of these would not collide:
     1...
 
 history of spawns is known.
+because speed changes, the future position may vary.
+
+
+Sun 07/07/2013 
+09:08
+
 
 
 Sat 07/06/2013 

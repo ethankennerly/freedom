@@ -13,8 +13,8 @@ package com.finegamedesign.freedom
             super(X, Y, Img);
             width = 0.5 * frameWidth;
             height = 0.5 * frameHeight;
-            offset.x = 0.5 * width;
-            offset.y = 0.5 * height;
+            offset.x = 0.5 * (frameWidth - width);
+            offset.y = 0.5 * (frameHeight - height);
             // loadGraphic(Img, true, false, 16, 16, true);
             //+ addAnimation("left", [0], 30, true);
             //+ addAnimation("right", [1], 30, true);
