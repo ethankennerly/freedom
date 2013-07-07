@@ -1,6 +1,7 @@
 TODO
-	Shuffle spawned rows and columns.
 	How to manage risk and reward?
+		intersection spawns pickup.
+		score pickup
 	Sync speed to intensity of music (Drone Strike by SEVA).
 	square adventurer walks and taps
 	see icon of arrow keys
@@ -40,10 +41,11 @@ LOG
 	10 Many rectangles move from any side of screen.
 	11 ...
 	13 Read click to start.  read arrow key to move.
-	14 ...
+	14 - What's fun?
 	15 vary speed and density.
 	16 Each spawn prohibits one row and column.
-	17 
+	17 - Debug drawCard (array had two excluded).
+	18 Shuffle spawned rows and columns.
 
 
 JOURNAL
@@ -101,4 +103,54 @@ offset quarter second between loop.
 Release key. snap to cell
 wierd.
 
+
+Sat 07/06/2013 
+19:36
+
+Matrix of rows and columns.
+Array of rows and array of columns.
+Count spawn.  When row and column reaches a threshold, spawn there on next collision of boxes there and reset to 0.
+pickup only appears after boxes pass by.
+upon spawn the row or column is known.
+upon intersection, the target coordinate can be deduced.  the speed varies.
+pickup can be attached to each bullet and checked for collision with other pickup.  this is tiny.
+player collision can be larger than it looks, and bullet smaller than it looks.  
+
+collision of 128 x 128 would be about 16184 calls.
+
+if only rows and columns may collide, check these.
+only a diagonal relationship between time of spawn with orthogonal side indicates a collision.
+example:
+
+     01
+    0..
+    1..
+
+0x0 collides, 1x1 collides.
+these would also collide:  0x1, 1x0
+
+      01
+      ..
+     0..
+   1....
+
+The center of these would not collide:
+
+      0
+      .1
+     0..
+    1...
+
+history of spawns is known.
+
+
+Sat 07/06/2013 
+20:08
+
+Simeon may expect a warning before speed up.
+	fade before speed?
+	anticipation before adjust?
+	tween?
+Simeon may expect to restart ramp up to higher intensity.
+Simeon expects to notice additional instructions if scrolling down the page.
 

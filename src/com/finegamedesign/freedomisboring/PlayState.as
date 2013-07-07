@@ -21,8 +21,6 @@ package com.finegamedesign.freedomisboring
         private var cellWidth:int;
         private var bullet:Bullet;
         private var map:FlxTilemap;
-        // TODO
-        private var gibs:FlxEmitter;
 
         private function createScores():void
         {
@@ -30,6 +28,7 @@ package com.finegamedesign.freedomisboring
                 FlxG.scores = [0];
                 FlxG.score = 0;
                 FlxG.flashFramerate = 60;
+                FlxG.bgColor = 0xFFFFD9C6;
                 // FlxG.visualDebug = true;
                 FlxG.worldBounds = new FlxRect(0, 0, 1280, 960);
             }
@@ -43,7 +42,7 @@ package com.finegamedesign.freedomisboring
             super.create();
             createScores();
             // loadMap();
-            FlxG.bgColor = 0xFFFFD9C6;
+            tweenBgColor(0xFFFFD9C6);
             player = new Player(FlxG.width / 2, FlxG.height / 2);
             player.y -= player.height / 2;
             player.x -= player.width / 2;
@@ -111,6 +110,7 @@ package com.finegamedesign.freedomisboring
             if (60 <= lifeTime) {
                 instructionText.text = "";
             }
+            interpolateBgColor();
             super.update();
         }
 
@@ -217,20 +217,77 @@ package com.finegamedesign.freedomisboring
         {
             var inCycle:int = lifeTime % 50;
             if (inCycle < 10) {
-                FlxG.bgColor = 0xFFFFD9C6;
-                setBulletSpeed(1.0);
+                tweenBgColor(0xFFFFD9C6);
+                if (1 < inCycle) {
+                    setBulletSpeed(1.0);
+                }
             }
             else if (inCycle < 20) {
-                FlxG.bgColor = 0xFFFDFF97;
-                setBulletSpeed(2.0);
+                tweenBgColor(0xFFFDFF97);
+                if (11 < inCycle) {
+                    setBulletSpeed(2.0);
+                }
             }
             else if (inCycle < 30) {
-                FlxG.bgColor = 0xFFFFD9C6;
-                setBulletSpeed(1.0);
+                tweenBgColor(0xFFFFD9C6);
+                if (21 < inCycle) {
+                    setBulletSpeed(1.0);
+                }
             }
             else if (inCycle < 40) {
-                FlxG.bgColor = 0xFFEAD2FF;
-                setBulletSpeed(0.5);
+                tweenBgColor(0xFFEAD2FF);
+                if (31 < inCycle) {
+                    setBulletSpeed(0.5);
+                }
+            }
+        }
+
+        private var toColor:uint;
+        private var fromColor:uint;
+        private var progressTime:Number;
+        private var toTime:Number;
+
+        private function tweenBgColor(newColor:uint, seconds:Number=2.0):void
+        {
+            if (FlxG.bgColor == newColor) {
+                progressTime = seconds;
+                toTime = 0.0;
+                toColor = FlxG.bgColor;
+            }
+            else {
+                fromColor = FlxG.bgColor;
+                progressTime = 0.0;
+                toTime = seconds;
+                toColor = newColor;
+            }
+        }
+
+        private function interpolateBgColor():void
+        {
+            if (0.0 < toTime && toTime <= progressTime) {
+                FlxG.bgColor = toColor;
+                toTime = 0.0;
+            }
+            if (progressTime < toTime) {
+                progressTime += FlxG.elapsed;
+                if (0.0 < toTime && toTime <= progressTime) {
+                    FlxG.bgColor = toColor;
+                    toTime = 0.0;
+                }
+                else {
+                    var progress:Number = Math.min(1.0, progressTime / toTime);
+                    var fromB:uint = (fromColor & 0xFF);
+                    var fromG:uint = ((fromColor >> 8) & 0xFF);
+                    var fromR:uint = ((fromColor >> 16) & 0xFF);
+                    var b:int = (toColor & 0xFF) - fromB;
+                    var g:int = ((toColor >> 8) & 0xFF) - fromG;
+                    var r:int = ((toColor >> 16) & 0xFF) - fromR;
+                    var progressColor:uint = 0xFF000000;
+                    progressColor |= int(progress * b + fromB);
+                    progressColor |= int(progress * g + fromG) << 8;
+                    progressColor |= int(progress * r + fromR) << 16;
+                    FlxG.bgColor = progressColor;
+                }
             }
         }
 
