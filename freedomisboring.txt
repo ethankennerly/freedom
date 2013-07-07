@@ -1,6 +1,7 @@
 TODO
-	Each spawn prohibits one row and column.
-	Shuffle rows and columns.  
+	Shuffle spawned rows and columns.
+	How to manage risk and reward?
+	Sync speed to intensity of music (Drone Strike by SEVA).
 	square adventurer walks and taps
 	see icon of arrow keys
 	lasers fire and hiss
@@ -41,6 +42,8 @@ LOG
 	13 Read click to start.  read arrow key to move.
 	14 ...
 	15 vary speed and density.
+	16 Each spawn prohibits one row and column.
+	17 
 
 
 JOURNAL
