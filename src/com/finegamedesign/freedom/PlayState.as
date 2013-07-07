@@ -97,8 +97,8 @@ package com.finegamedesign.freedom
 
         private function addHud():void
         {
-            titleText = new FlxText(0, FlxG.height / 3, FlxG.width, 
-                "SHADOW OF THE DRONES\n\nMUSIC BY SEVA\n\nGAME BY ETHAN KENNERLY");
+            titleText = new FlxText(0, int(FlxG.height / 3), FlxG.width, 
+                "SHADOW OF THE DRONES\n\n\nMUSIC BY SEVA\n\n\nGAME BY ETHAN KENNERLY\n\n\nPLAYTESTING BY SIMEON");
             titleText.color = textColor;
             titleText.scrollFactor.x = 0.0;
             titleText.scrollFactor.y = 0.0;
@@ -541,8 +541,8 @@ package com.finegamedesign.freedom
         {
             var enemy:FlxSprite = FlxSprite(you);
             var player:Player = Player(me);
-            var my:FlxPoint = new FlxPoint(player.x + player.offset.x, player.y + player.offset.y);
-            var yours:FlxPoint = new FlxPoint(enemy.x + enemy.offset.x, player.y + enemy.offset.y);
+            var my:FlxPoint = new FlxPoint(player.x + player.frameWidth / 2, player.y + player.frameHeight / 2);
+            var yours:FlxPoint = new FlxPoint(enemy.x + enemy.frameWidth / 2, enemy.y + enemy.frameHeight / 2);
             if (0.5 * (enemy.frameWidth + player.frameWidth) < FlxU.getDistance(my, yours)) {
                 // FlxG.log("collide " + FlxU.getDistance(my, yours).toFixed(2));
                 return;
