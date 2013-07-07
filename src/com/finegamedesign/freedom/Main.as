@@ -1,4 +1,4 @@
-package com.finegamedesign.freedomisboring
+package com.finegamedesign.freedom
 {
     import org.flixel.*;
     [SWF(width="600", height="600", backgroundColor="#FFD9C6")]

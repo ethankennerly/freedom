@@ -13,7 +13,7 @@ package
     {
         public function Preloader()
         {
-            className = "com.finegamedesign.freedomisboring.Main";
+            className = "com.finegamedesign.freedom.Main";
             super();
         }
     }

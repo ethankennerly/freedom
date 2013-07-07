@@ -1,4 +1,4 @@
-package com.finegamedesign.freedomisboring
+package com.finegamedesign.freedom
 {
     public class Sounds
     {

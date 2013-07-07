@@ -1,4 +1,4 @@
-package com.finegamedesign.freedomisboring
+package com.finegamedesign.freedom
 {
     import org.flixel.*;
    
@@ -217,26 +217,30 @@ package com.finegamedesign.freedomisboring
         {
             var inCycle:int = lifeTime % 50;
             if (inCycle < 10) {
-                tweenBgColor(0xFFFFD9C6);
-                if (1 < inCycle) {
+                tweenBgColor( // 0xFFFFD9C6);
+                             0xFF0000000); 
+                if (2 <= inCycle) {
                     setBulletSpeed(1.0);
                 }
             }
             else if (inCycle < 20) {
-                tweenBgColor(0xFFFDFF97);
-                if (11 < inCycle) {
+                tweenBgColor( // 0xFFFDFF97);
+                              0xFFFFFFFF);
+                if (12 <= inCycle) {
                     setBulletSpeed(2.0);
                 }
             }
             else if (inCycle < 30) {
-                tweenBgColor(0xFFFFD9C6);
-                if (21 < inCycle) {
+                tweenBgColor( // 0xFFFFD9C6);
+                              0xFFFF0000);
+                if (22 <= inCycle) {
                     setBulletSpeed(1.0);
                 }
             }
             else if (inCycle < 40) {
-                tweenBgColor(0xFFEAD2FF);
-                if (31 < inCycle) {
+                tweenBgColor( // 0xFFEAD2FF);
+                              0xFF0000FF);
+                if (32 <= inCycle) {
                     setBulletSpeed(0.5);
                 }
             }
@@ -249,12 +253,18 @@ package com.finegamedesign.freedomisboring
 
         private function tweenBgColor(newColor:uint, seconds:Number=2.0):void
         {
+            // FlxG.bgColor = newColor;
             if (FlxG.bgColor == newColor) {
                 progressTime = seconds;
                 toTime = 0.0;
                 toColor = FlxG.bgColor;
             }
-            else {
+            else if (seconds <= 0.0) {
+                FlxG.bgColor = newColor;
+                toTime = 0.0;
+                progressTime = 0.0;
+            }
+            else if (toColor != newColor) {
                 fromColor = FlxG.bgColor;
                 progressTime = 0.0;
                 toTime = seconds;
@@ -264,30 +274,27 @@ package com.finegamedesign.freedomisboring
 
         private function interpolateBgColor():void
         {
+            progressTime += FlxG.elapsed;
             if (0.0 < toTime && toTime <= progressTime) {
                 FlxG.bgColor = toColor;
                 toTime = 0.0;
+                // FlxG.log("interpolated " + toColor.toString(16));
             }
-            if (progressTime < toTime) {
-                progressTime += FlxG.elapsed;
-                if (0.0 < toTime && toTime <= progressTime) {
-                    FlxG.bgColor = toColor;
-                    toTime = 0.0;
-                }
-                else {
-                    var progress:Number = Math.min(1.0, progressTime / toTime);
-                    var fromB:uint = (fromColor & 0xFF);
-                    var fromG:uint = ((fromColor >> 8) & 0xFF);
-                    var fromR:uint = ((fromColor >> 16) & 0xFF);
-                    var b:int = (toColor & 0xFF) - fromB;
-                    var g:int = ((toColor >> 8) & 0xFF) - fromG;
-                    var r:int = ((toColor >> 16) & 0xFF) - fromR;
-                    var progressColor:uint = 0xFF000000;
-                    progressColor |= int(progress * b + fromB);
-                    progressColor |= int(progress * g + fromG) << 8;
-                    progressColor |= int(progress * r + fromR) << 16;
-                    FlxG.bgColor = progressColor;
-                }
+            else 
+            {
+                var progress:Number = Math.min(1.0, progressTime / toTime);
+                var fromB:int = (fromColor & 0xFF);
+                var fromG:int = ((fromColor >> 8) & 0xFF);
+                var fromR:int = ((fromColor >> 16) & 0xFF);
+                var b:int = (toColor & 0xFF) - fromB;
+                var g:int = ((toColor >> 8) & 0xFF) - fromG;
+                var r:int = ((toColor >> 16) & 0xFF) - fromR;
+                var progressColor:uint = 0xFF000000;
+                progressColor |= (int(progress * b) + fromB);
+                progressColor |= (int(progress * g) + fromG) << 8;
+                progressColor |= (int(progress * r) + fromR) << 16;
+                FlxG.bgColor = progressColor;
+                // FlxG.log("interpolate " + progress.toFixed(2) + " to " + toColor.toString(16));
             }
         }
 
