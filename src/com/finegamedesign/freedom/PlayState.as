@@ -29,6 +29,9 @@ package com.finegamedesign.freedom
         private var bullet:Bullet;
         private var map:FlxTilemap;
 
+        /**
+         * Restart. Simeon may expect to pickup pace quicker.
+         */
         private function createScores():void
         {
             if (null == FlxG.scores || FlxG.scores.length <= 0) {
@@ -45,9 +48,17 @@ package com.finegamedesign.freedom
             else {
                 FlxG.scores.push(FlxG.score);
             }
-            FlxG.score = 0;
+            if (9 <= FlxG.score) {
+                FlxG.score = 2;
+            }
+            else {
+                FlxG.score = 0;
+            }
         }
 
+        /**
+         * 13/7/6 Simeon may expect night phase does not completely fill the screen.
+         */
         override public function create():void
         {
             super.create();
@@ -60,7 +71,7 @@ package com.finegamedesign.freedom
             player.x -= player.width / 2;
             add(player);
             enemies = new FlxGroup();
-            for (var concurrentBullet:int = 0; concurrentBullet < 128; concurrentBullet++) {
+            for (var concurrentBullet:int = 0; concurrentBullet < 96; concurrentBullet++) {
                 bullet = new Bullet();
                 bullet.exists = false;
                 enemies.add(bullet);
@@ -135,7 +146,7 @@ package com.finegamedesign.freedom
             lifeTime += FlxG.elapsed;
             if (spawnTime + 4 < lifeTime) {
                 var startSide:int = (lifeTime / 4) % 4;
-                var count:Number = Math.pow(FlxG.score * 10, 0.75);
+                var count:Number = Math.pow(FlxG.score * 10, 0.5);
                 for (var b:Number = 0; b < count; b += speedFactor) {
                     bullet = spawnBullet((b + startSide) % 4, lastExcludedRow, lastExcludedColumn);
                     countPickup(bullet, ((b + startSide) % 2) == 0);
@@ -194,7 +205,8 @@ package com.finegamedesign.freedom
             var other:Bullet;
             for (var e:int = 0; e < enemies.members.length; e++) {
                 other = enemies.members[e];
-                if (other != bullet && other.x == bullet.x && other.y == bullet.y) {
+                if (null != other && other != bullet 
+                        && other.x == bullet.x && other.y == bullet.y) {
                     return null;
                 }
             }
@@ -241,6 +253,9 @@ package com.finegamedesign.freedom
             return draw;
         }
 
+        /**
+         * 13/7/7 Simeon may expect to read when more drones appear.
+         */
         private function updateBulletSpeed():void
         {
             var inCycle:int = lifeTime % 50;
@@ -252,21 +267,21 @@ package com.finegamedesign.freedom
             }
             else if (inCycle < 20) {
                 if (lifeTime < 50) {
-                    instructionText.text = "FAST";
+                    instructionText.text = "NIGHT IS SLOW YET DENSE!";
                 }
-                tweenBgColor(palette[1], 2.0);
-            }
-            else if (inCycle < 30) {
-                if (lifeTime < 50) {
-                    instructionText.text = "MEDIUM";
-                }
-                tweenBgColor(palette[2], 1.0);
+                tweenBgColor(palette[3], 0.5);
             }
             else if (inCycle < 40) {
                 if (lifeTime < 50) {
-                    instructionText.text = "SLOW";
+                    instructionText.text = "TWILIGHT IS MEDIUM";
                 }
-                tweenBgColor(palette[3], 0.5);
+                tweenBgColor(palette[2], 1.0);
+            }
+            else if (inCycle < 50) {
+                if (lifeTime < 50) {
+                    instructionText.text = "DAYTIME IS EMPTY YET FAST!";
+                }
+                tweenBgColor(palette[1], 2.0);
             }
         }
 
@@ -369,6 +384,9 @@ package com.finegamedesign.freedom
         private var pickups:FlxGroup;
         private var pickup:Pickup;
 
+        /**
+         * 13/7/6 Two pickups near each other. Do not read instructions. Confused.
+         */
         private function pickupInit():void
         {
             rowSincePickup = new Dictionary();
@@ -381,6 +399,13 @@ package com.finegamedesign.freedom
                     pickup.y = FlxG.height * (0.25 + 0.5 * int(concurrentPickup / 2));
                     pickup.revive();
                 }
+                /*-
+                else if (concurrentPickup == 4) {
+                    pickup.x = FlxG.width * 0.625;
+                    pickup.y = FlxG.height * 0.375;
+                    pickup.revive();
+                }
+                -*/
                 else {
                     pickup.exists = false;
                 }
@@ -474,8 +499,14 @@ package com.finegamedesign.freedom
             var player:Player = Player(me);
             var picked:Pickup = Pickup(you);
             picked.kill();
-            if (FlxG.score == 1) {
-                instructionText.text = "DODGE DRONES";
+            if (FlxG.score == 0) {
+                instructionText.text = "EACH RESCUE SCORES A POINT -->";
+            }
+            else if (FlxG.score == 1) {
+                instructionText.text = "BUT EACH RESCUE ALSO SUMMONS MORE DRONES!";
+            }
+            else if (FlxG.score == 2) {
+                instructionText.text = "DODGE DRONES!";
                 lifeTime = 0.0;
                 spawnTime = 0.0;
                 FlxG.playMusic(Sounds.music);
@@ -495,8 +526,13 @@ package com.finegamedesign.freedom
 
         private function collide(me:FlxObject, you:FlxObject):void
         {
-            var player:Player = Player(me);
             var enemy:FlxSprite = FlxSprite(you);
+            var player:Player = Player(me);
+            var my:FlxPoint = new FlxPoint(player.x, player.y);
+            var yours:FlxPoint = new FlxPoint(you.x, you.y);
+            if (0.7 * enemy.frameWidth < FlxU.getDistance(my, yours)) {
+                return;
+            }
             player.hurt(1);
             enemy.solid = false;
             if (1 <= player.health) {

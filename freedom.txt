@@ -1,6 +1,8 @@
 TODO
+	simeon may expect to escape night phase
+	if at corner of drone, dodge.
+	square adventurer; person to rescue. walks and taps.
 	Sync speed to intensity of music (Drone Strike by SEVA).
-	square adventurer walks and taps
 	see icon of arrow keys
 	quadropters travel
 	lasers fire and hiss
@@ -11,7 +13,6 @@ TODO
 	missile explodes
 	chased by red square. rectangle destroys and scores red square.
 	red square approaches quickly and then slows down to close in.
-	high score
 	Layered loop.
 	speed up and slow down time to energy of music.
 	get key, arrow appears
