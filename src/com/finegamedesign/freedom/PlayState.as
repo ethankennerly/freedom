@@ -66,7 +66,7 @@ package com.finegamedesign.freedom
             createScores();
             pickupInit();
             // loadMap();
-            tweenBgColor(palette[4], 1.0);
+            tweenBgColor(palette[3], 1.0);
             player = new Player(FlxG.width / 2, FlxG.height / 2);
             player.y -= player.height / 2;
             player.x -= player.width / 2;
@@ -98,7 +98,7 @@ package com.finegamedesign.freedom
         private function addHud():void
         {
             titleText = new FlxText(0, int(FlxG.height / 3), FlxG.width, 
-                "SHADOW OF THE DRONES\n\n\nMUSIC BY SEVA\n\n\nGAME BY ETHAN KENNERLY\n\n\nPLAYTESTING BY SIMEON");
+                "SHADOW OF THE DRONES\n\n\nMUSIC 'DRONE STRIKE' BY SEVA ON SOUNDCLOUD\n\n\nGAME BY ETHAN KENNERLY\n\n\nPLAYTESTING BY SIMEON");
             titleText.color = textColor;
             titleText.scrollFactor.x = 0.0;
             titleText.scrollFactor.y = 0.0;
@@ -156,8 +156,8 @@ package com.finegamedesign.freedom
             lifeTime += FlxG.elapsed;
             if (spawnTime + 4 < lifeTime) {
                 var startSide:int = (lifeTime / 4) % 4;
-                var count:Number = Math.pow(FlxG.score * 10, 0.5);
-                for (var b:Number = 0; b < count; b += speedFactor) {
+                var count:int = Math.pow(FlxG.score * 10, 0.5) * Math.pow(speedFactor, 0.5);
+                for (var b:int = 0; b < count; b ++) {
                     bullet = spawnBullet((b + startSide) % 4, lastExcludedRow, lastExcludedColumn);
                     countPickup(bullet, ((b + startSide) % 2) == 0);
                 }
@@ -267,6 +267,53 @@ package com.finegamedesign.freedom
          * 13/7/7 Simeon may expect to read when more drones appear.
          */
         private function updateBulletSpeed():void
+        {
+            var musicTime:Number = FlxG.music.channel.position / 1000.0;
+            if (musicTime < 1) {
+                tweenBgColor(palette[3], 0.5);
+            }
+            else if (musicTime < 6) {
+                if (lifeTime < 60) {
+                    instructionText.text = "NIGHT IS SLOW YET DENSE!";
+                }
+                tweenBgColor(palette[3], 0.5);
+            }
+            else if (musicTime < 11) {
+                if (lifeTime < 60) {
+                    instructionText.text = "TWILIGHT IS MEDIUM";
+                }
+                tweenBgColor(palette[2], 1.0);
+            }
+            else if (musicTime < 22) {
+                if (lifeTime < 60) {
+                    instructionText.text = "DAYTIME IS EMPTY YET FAST!";
+                }
+                tweenBgColor(palette[1], 2.0);
+            }
+            else if (musicTime < 33) {
+                if (lifeTime < 60) {
+                    instructionText.text = "";
+                }
+                tweenBgColor(palette[2], 1.0);
+            }
+            else if (musicTime < 44) {
+                tweenBgColor(palette[3], 1.0);
+            }
+            else if (musicTime < 55) {
+                tweenBgColor(palette[2], 1.0);
+            }
+            else if (musicTime < 66) {
+                tweenBgColor(palette[1], 2.0);
+            }
+            else if (musicTime < 66) {
+                tweenBgColor(palette[1], 2.0);
+            }
+        }
+
+        /**
+         * 13/7/7 Simeon may expect to read when more drones appear.
+         */
+        private function updateBulletSpeedLoop():void
         {
             var inCycle:int = lifeTime % 50;
             if (inCycle < 10) {
@@ -463,13 +510,14 @@ package com.finegamedesign.freedom
 
         private function maySpawnPickup():void
         {
+            var bulletSpawnsPickup:int = 4;
             for (var y:* in rowSincePickup) {
                 for (var x:* in columnSincePickup) {
                     if (Math.abs(player.x - columnSincePickup[x]) < cellWidth
                      && Math.abs(player.y - rowSincePickup[y]) < cellWidth) {
                         continue;
                     }
-                    if (5 <= rowSincePickup[y] + columnSincePickup[x]) {
+                    if (bulletSpawnsPickup <= rowSincePickup[y] + columnSincePickup[x]) {
                         pickup = Pickup(pickups.getFirstAvailable());
                         if (null == pickup) {
                             pickup = pickups.members[int(FlxG.random() * pickups.members.length)];
@@ -513,13 +561,14 @@ package com.finegamedesign.freedom
                 instructionText.text = "EACH RESCUE SCORES A POINT -->";
             }
             else if (FlxG.score == 1) {
-                instructionText.text = "BUT EACH RESCUE ALSO SUMMONS MORE DRONES!";
+                instructionText.text = "EACH RESCUE ALSO SUMMONS DRONES!";
             }
             else if (FlxG.score == 2) {
                 instructionText.text = "DODGE DRONES!";
                 lifeTime = 0.0;
                 spawnTime = 0.0;
                 FlxG.playMusic(Sounds.music);
+                FlxG.music.fadeIn(1.0);
                 state = "play";
             }
             FlxG.score += 1;
@@ -560,6 +609,7 @@ package com.finegamedesign.freedom
             FlxG.camera.shake(0.05, 0.5, null, false, FlxCamera.SHAKE_HORIZONTAL_ONLY);
             instructionText.text = "A DRONE SHOT YOU";
             FlxG.fade(0xFF000000, 4.0, lose);
+            FlxG.music.fadeOut(4.0);
             state = "lose";
         }
 
@@ -610,7 +660,12 @@ package com.finegamedesign.freedom
         {
             if (FlxG.keys.pressed("SHIFT")) {
                 if (FlxG.keys.justPressed("ONE")) {
-                    FlxG.timeScale = 1.0;
+                    if (FlxG.timeScale != 1.0) {
+                        FlxG.music.pause();
+                        FlxG.music.resume(1000.0 * lifeTime);
+                        FlxG.log("resume " + FlxG.music.channel.position);
+                        FlxG.timeScale = 1.0;
+                    }
                 }
                 else if (FlxG.keys.justPressed("TWO")) {
                     FlxG.timeScale *= 2.0;

@@ -364,11 +364,20 @@ package org.flixel
 			_position = 0;
 		}
 		
+        public function get channel():SoundChannel
+        {
+            return _channel;
+        }
+
 		/**
 		 * Unpause a sound.  Only works on sounds that have been paused.
+         * 13/7/7 Shadow of the Drones.  Skip ahead and return to normal speed.  Ethan expects to resume at a position.
 		 */
-		public function resume():void
+		public function resume(milliseconds:int=-1):void
 		{
+            if (0 <= milliseconds) {
+                _position = milliseconds % _sound.length;
+            }
 			if(_position <= 0)
 				return;
 			if(_looped)
@@ -387,7 +396,7 @@ package org.flixel
 			}
 			active = (_channel != null);
 		}
-		
+	
 		/**
 		 * Call this function to pause this sound.
 		 */
