@@ -97,9 +97,13 @@ package com.finegamedesign.freedom
 
         private function addHud():void
         {
-            titleText = new FlxText(0, int(FlxG.height / 3), FlxG.width, 
-                "SHADOW OF THE DRONES\n\n\nMUSIC 'DRONE STRIKE' BY SEVA ON SOUNDCLOUD\n\n\nGAME BY ETHAN KENNERLY\n\n\nPLAYTESTING BY SIMEON");
+            titleText = new FlxText(0, int(FlxG.height * 0.25), FlxG.width, 
+                "SHADOW OF THE DRONES" 
+                + "\n\nMusic 'Drone Strike' by Seva on SoundCloud"
+                + "\nGame  by Ethan Kennerly\nPlaytesting by Simeon Vincent"
+                + "\n\n\n\n\n\"Freedom is...\nfreedom can actually be boring ,\nyou've got to realize that.\"\n        -- Peter Molyneux");
             titleText.color = textColor;
+            titleText.size = 8;
             titleText.scrollFactor.x = 0.0;
             titleText.scrollFactor.y = 0.0;
             titleText.alignment = "center";
@@ -269,7 +273,7 @@ package com.finegamedesign.freedom
         private function updateBulletSpeed():void
         {
             var musicTime:Number = FlxG.music.channel.position / 1000.0;
-            if (musicTime < 1) {
+            if (musicTime < 5) {
                 tweenBgColor(palette[3], 0.5);
             }
             else if (musicTime < 6) {
