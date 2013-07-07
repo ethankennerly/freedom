@@ -54,7 +54,7 @@ package com.finegamedesign.freedom
             createScores();
             pickupInit();
             // loadMap();
-            tweenBgColor(0xFFFFD9C6, 1.0);
+            tweenBgColor(palette[4], 1.0);
             player = new Player(FlxG.width / 2, FlxG.height / 2);
             player.y -= player.height / 2;
             player.x -= player.width / 2;
@@ -101,12 +101,12 @@ package com.finegamedesign.freedom
 
 		override public function update():void 
         {
-            if ("start" == state || "play" == state) {
+            if ("lose" != state) {
                 updateInput();
             }
             if ("start" == state && (player.velocity.x != 0.0 || player.velocity.y != 0.0))
             {
-                state = "play";
+                state = "pickup";
                 instructionText.text = "PRESS ARROW KEYS TO PICKUP POINTS";
             }
             if ("play" == state) {
@@ -115,13 +115,10 @@ package com.finegamedesign.freedom
                 updateBulletSpeed();
                 updatePickup();
                 FlxG.overlap(player, enemies, collide);
-                FlxG.overlap(player, pickups, scoreUp);
-                updateHud();
             }
-            if (60 <= lifeTime) {
-                instructionText.text = "";
-            }
+            FlxG.overlap(player, pickups, scoreUp);
             interpolateBgColor();
+            updateHud();
             super.update();
         }
 
@@ -200,11 +197,12 @@ package com.finegamedesign.freedom
 
         /**
          * Random position, except not at excluded.
+         * Excluded never at edge, because cannot see what may emerge from offscreen.
          * Expects width greater than 2 cellWidth.
          */
         private function drawCard(deck:Array, cellWidth:int, width:int, excluded:Number):int
         {
-            var excludedPosition:int = excluded * (width - cellWidth);
+            var excludedPosition:int = excluded * (width - 3 * cellWidth) + cellWidth;
             excludedPosition = int(excludedPosition / cellWidth) * cellWidth;
             if (deck.length <= 0 || (deck.length == 1 && deck[0] == excludedPosition)) {
                 deck = [];
@@ -236,15 +234,27 @@ package com.finegamedesign.freedom
         {
             var inCycle:int = lifeTime % 50;
             if (inCycle < 10) {
+                if (50 <= lifeTime && "play" == state) {
+                    instructionText.text = "";
+                }
                 tweenBgColor(palette[2], 1.0);
             }
             else if (inCycle < 20) {
+                if (lifeTime < 50) {
+                    instructionText.text = "FAST";
+                }
                 tweenBgColor(palette[1], 2.0);
             }
             else if (inCycle < 30) {
+                if (lifeTime < 50) {
+                    instructionText.text = "MEDIUM";
+                }
                 tweenBgColor(palette[2], 1.0);
             }
             else if (inCycle < 40) {
+                if (lifeTime < 50) {
+                    instructionText.text = "SLOW";
+                }
                 tweenBgColor(palette[3], 0.5);
             }
         }
@@ -311,6 +321,9 @@ package com.finegamedesign.freedom
 
         private var speedFactor:Number = 1.0;
 
+        /**
+         * 13/7/6 Simeon may expect player moves at constant speed.
+         */
         private function setBulletSpeed(factor:Number):void
         {
             speedFactor = factor;
@@ -365,7 +378,10 @@ package com.finegamedesign.freedom
             }
             add(pickups);
         }
-
+        
+        /**
+         * Do not spawn at edge.  Cannot see what emerges from off screen.
+         */
         private function countPickup(bullet:Bullet, horizontal:Boolean):void
         {
             if (null == bullet) {
@@ -376,10 +392,16 @@ package com.finegamedesign.freedom
             if (horizontal) {
                 sincePickup = rowSincePickup;
                 value = bullet.y;
+                if (value < cellWidth || FlxG.width - cellWidth <= value) {
+                    return;
+                }
             }
             else {
                 sincePickup = columnSincePickup;
                 value = bullet.x;
+                if (value < cellWidth || FlxG.height - cellWidth <= value) {
+                    return;
+                }
             }
             if (!(value in sincePickup)) {
                 sincePickup[value] = 0;
@@ -441,11 +463,12 @@ package com.finegamedesign.freedom
             var player:Player = Player(me);
             var picked:Pickup = Pickup(you);
             picked.kill();
-            if (FlxG.score == 0) {
-                instructionText.text = "PRESS ARROW KEYS TO DODGE BOXES";
+            if (FlxG.score == 1) {
+                instructionText.text = "DODGE BOXES";
                 lifeTime = 0.0;
                 spawnTime = 0.0;
                 FlxG.playMusic(Sounds.music);
+                state = "play";
             }
             FlxG.score += 1;
             FlxG.play(Sounds.pickup);

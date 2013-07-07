@@ -1,10 +1,9 @@
 TODO
-	How to manage risk and reward?
-		intersection spawns pickup.
-		score pickup
+	do not spawn point or exclude edge
 	Sync speed to intensity of music (Drone Strike by SEVA).
 	square adventurer walks and taps
 	see icon of arrow keys
+	quadropters travel
 	lasers fire and hiss
 	being hit gibs, explosion, camera shake
 	dust monochrome
@@ -47,8 +46,10 @@ LOG
 	17 - Debug drawCard (array had two excluded).
 	18 Shuffle spawned rows and columns.
 7
-	7 
+	7 - Debug interpolate
 	8 
+	9 - Debug spawn pickup
+	10
 
 JOURNAL
 
