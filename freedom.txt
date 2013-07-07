@@ -46,7 +46,9 @@ LOG
 	16 Each spawn prohibits one row and column.
 	17 - Debug drawCard (array had two excluded).
 	18 Shuffle spawned rows and columns.
-
+7
+	7 
+	8 
 
 JOURNAL
 

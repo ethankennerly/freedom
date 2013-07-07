@@ -1,5 +1,7 @@
 package com.finegamedesign.freedom
 {
+    import flash.display.Bitmap;
+    import flash.geom.Rectangle;
     import org.flixel.*;
    
     public class PlayState extends FlxState
@@ -9,8 +11,11 @@ package com.finegamedesign.freedom
         private static const Map:Class;
         [Embed(source="../../../../gfx/tiles.png")]
         private static const Tiles:Class;
+        [Embed(source="../../../../gfx/palette.png")]
+        private static const Palette:Class;
+        private static var palette:Vector.<uint>;
+        private static var textColor:uint;
 
-        private var textColor:uint = 0xFFFFFF;
         private var state:String;
         private var instructionText:FlxText;
         private var scoreText:FlxText;
@@ -28,7 +33,11 @@ package com.finegamedesign.freedom
                 FlxG.scores = [0];
                 FlxG.score = 0;
                 FlxG.flashFramerate = 60;
-                FlxG.bgColor = 0xFFFFD9C6;
+                var paletteImage:Bitmap = new Palette();
+                palette = paletteImage.bitmapData.getVector(
+                    new Rectangle(0, 0, paletteImage.width, paletteImage.height));
+                textColor = palette[0];
+                FlxG.bgColor = palette[1];
                 // FlxG.visualDebug = true;
                 FlxG.worldBounds = new FlxRect(0, 0, 1280, 960);
             }
@@ -42,7 +51,7 @@ package com.finegamedesign.freedom
             super.create();
             createScores();
             // loadMap();
-            tweenBgColor(0xFFFFD9C6);
+            tweenBgColor(0xFFFFD9C6, 1.0);
             player = new Player(FlxG.width / 2, FlxG.height / 2);
             player.y -= player.height / 2;
             player.x -= player.width / 2;
@@ -217,58 +226,48 @@ package com.finegamedesign.freedom
         {
             var inCycle:int = lifeTime % 50;
             if (inCycle < 10) {
-                tweenBgColor( // 0xFFFFD9C6);
-                             0xFF0000000); 
-                if (2 <= inCycle) {
-                    setBulletSpeed(1.0);
-                }
+                tweenBgColor(palette[2], 1.0);
             }
             else if (inCycle < 20) {
-                tweenBgColor( // 0xFFFDFF97);
-                              0xFFFFFFFF);
-                if (12 <= inCycle) {
-                    setBulletSpeed(2.0);
-                }
+                tweenBgColor(palette[1], 2.0);
             }
             else if (inCycle < 30) {
-                tweenBgColor( // 0xFFFFD9C6);
-                              0xFFFF0000);
-                if (22 <= inCycle) {
-                    setBulletSpeed(1.0);
-                }
+                tweenBgColor(palette[2], 1.0);
             }
             else if (inCycle < 40) {
-                tweenBgColor( // 0xFFEAD2FF);
-                              0xFF0000FF);
-                if (32 <= inCycle) {
-                    setBulletSpeed(0.5);
-                }
+                tweenBgColor(palette[3], 0.5);
             }
         }
 
         private var toColor:uint;
         private var fromColor:uint;
+        private var fromSpeed:Number;
+        private var toSpeed:Number;
         private var progressTime:Number;
         private var toTime:Number;
 
-        private function tweenBgColor(newColor:uint, seconds:Number=2.0):void
+        private function tweenBgColor(newColor:uint, speed:Number, seconds:Number=2.0):void
         {
             // FlxG.bgColor = newColor;
             if (FlxG.bgColor == newColor) {
                 progressTime = seconds;
                 toTime = 0.0;
                 toColor = FlxG.bgColor;
+                toSpeed = speedFactor;
             }
             else if (seconds <= 0.0) {
                 FlxG.bgColor = newColor;
                 toTime = 0.0;
                 progressTime = 0.0;
+                setBulletSpeed(speed);
             }
             else if (toColor != newColor) {
                 fromColor = FlxG.bgColor;
                 progressTime = 0.0;
                 toTime = seconds;
                 toColor = newColor;
+                fromSpeed = speedFactor;
+                toSpeed = speed;
             }
         }
 
@@ -278,6 +277,7 @@ package com.finegamedesign.freedom
             if (0.0 < toTime && toTime <= progressTime) {
                 FlxG.bgColor = toColor;
                 toTime = 0.0;
+                speedFactor = toSpeed;
                 // FlxG.log("interpolated " + toColor.toString(16));
             }
             else 
@@ -294,6 +294,7 @@ package com.finegamedesign.freedom
                 progressColor |= (int(progress * g) + fromG) << 8;
                 progressColor |= (int(progress * r) + fromR) << 16;
                 FlxG.bgColor = progressColor;
+                setBulletSpeed(progress * (toSpeed - fromSpeed) + fromSpeed);
                 // FlxG.log("interpolate " + progress.toFixed(2) + " to " + toColor.toString(16));
             }
         }
