@@ -334,6 +334,12 @@ package com.finegamedesign.freedom
             else if (musicTime == 88) {
                 tweenBgColor(palette[2], 1.0);
             }
+            else if (musicTime == 91) {
+                tweenBgColor(palette[2], 0.5);
+            }
+            else if (musicTime == 96) {
+                tweenBgColor(palette[2], 1.0);
+            }
             else if (musicTime == 99) {
                 tweenBgColor(palette[1], 2.0);
             }
@@ -356,7 +362,7 @@ package com.finegamedesign.freedom
                 tweenBgColor(palette[2], 1.0);
             }
             else if (musicTime == 154) {
-                tweenBgColor(palette[1], 0.5);
+                tweenBgColor(palette[3], 0.5);
             }
         }
 
