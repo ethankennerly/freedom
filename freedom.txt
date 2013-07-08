@@ -1,4 +1,6 @@
 TODO
+	Simeon plays several times in a row.  picks up 4.  expects spawn.
+	Simeon expects to understand why 2 at start.
 	Sync speed to intensity of music (Drone Strike by SEVA).
 	adventurer walks and taps.
 	person raises arms when rescued.

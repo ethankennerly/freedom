@@ -22,6 +22,7 @@ package com.finegamedesign.freedom
         private var instructionText:FlxText;
         private var titleText:FlxText;
         private var scoreText:FlxText;
+        private var highScoreText:FlxText;
         private var player:Player;
         private var lifeTime:Number;
         private var spawnTime:Number;
@@ -44,7 +45,7 @@ package com.finegamedesign.freedom
                 textColor = palette[0];
                 FlxG.bgColor = palette[1];
                 // FlxG.visualDebug = true;
-                FlxG.worldBounds = new FlxRect(0, 0, 1280, 960);
+                FlxG.worldBounds = new FlxRect(0, 0, FlxG.width, FlxG.height);
             }
             else {
                 FlxG.scores.push(FlxG.score);
@@ -63,13 +64,16 @@ package com.finegamedesign.freedom
         override public function create():void
         {
             super.create();
+            speedFactor = 1.0;
+            lifeTime = 0.0;
+            spawnTime = 0.0;
             createScores();
             pickupInit();
             // loadMap();
             tweenBgColor(palette[3], 1.0);
             player = new Player(FlxG.width / 2, FlxG.height / 2);
-            player.y -= player.height / 2;
-            player.x -= player.width / 2;
+            player.y -= player.frameHeight / 2;
+            player.x -= player.frameWidth / 2;
             add(player);
             enemies = new FlxGroup();
             var maxBullets:int = 80;
@@ -121,6 +125,12 @@ package com.finegamedesign.freedom
             scoreText.scrollFactor.x = 0.0;
             scoreText.scrollFactor.y = 0.0;
             add(scoreText);
+            highScoreText = new FlxText(10, 0, 30, "HI 0");
+            setHighScoreText();
+            highScoreText.color = textColor;
+            highScoreText.scrollFactor.x = 0.0;
+            highScoreText.scrollFactor.y = 0.0;
+            add(highScoreText);
         }
 
 		override public function update():void 
@@ -196,6 +206,8 @@ package com.finegamedesign.freedom
          * Example: 13/7/6 Invincible, speed x8. Play 400 seconds. Speed x1. 
          * Play 120 seconds.  Expect no solid wall.  Repeat twice.
          * Translucent.  Play 40 seconds.  Do not see two on top of each other.
+         * If another is in same position and alive, do not spawn.
+         * 13/7/7 Replay many times. Simeon expects to fix spawn.
          */
         private function spawnBullet(side:int, excludedRow:Number, excludedColumn:Number):Bullet
         {
@@ -219,7 +231,7 @@ package com.finegamedesign.freedom
             var other:Bullet;
             for (var e:int = 0; e < enemies.members.length; e++) {
                 other = enemies.members[e];
-                if (null != other && other != bullet 
+                if (null != other && other != bullet && other.alive
                         && other.x == bullet.x && other.y == bullet.y) {
                     return null;
                 }
@@ -260,7 +272,15 @@ package com.finegamedesign.freedom
                 draw = deck.pop();
                 deck.unshift(excludedPosition);
             }
+            if (draw == excludedPosition1) {
+                draw = deck.pop();
+                deck.unshift(excludedPosition1);
+            }
             if (draw == excludedPosition) {
+                draw = deck.pop();
+                deck.unshift(excludedPosition);
+            }
+            if (draw == excludedPosition || draw == excludedPosition1) {
                 throw new Error("Expected not excluded " + excluded + " deck " + deck);
             }
             // FlxG.log("drawCard: " + draw.toString() + " ex " + excludedPosition);
@@ -406,7 +426,7 @@ package com.finegamedesign.freedom
             }
         }
 
-        private var speedFactor:Number = 1.0;
+        private var speedFactor:Number;
 
         /**
          * 13/7/6 Simeon may expect player moves at constant speed.
@@ -456,8 +476,8 @@ package com.finegamedesign.freedom
             for (var concurrentPickup:int = 0; concurrentPickup < 16; concurrentPickup++) {
                 pickup = new Pickup();
                 if (concurrentPickup < 4) {
-                    pickup.x = FlxG.width * (0.25 + 0.5 * (concurrentPickup % 2));
-                    pickup.y = FlxG.height * (0.25 + 0.5 * int(concurrentPickup / 2));
+                    pickup.x = FlxG.width * (0.25 + 0.5 * (concurrentPickup % 2)) - pickup.frameWidth / 2;
+                    pickup.y = FlxG.height * (0.25 + 0.5 * int(concurrentPickup / 2)) - pickup.frameHeight / 2;
                     pickup.revive();
                 }
                 /*-
@@ -585,6 +605,21 @@ package com.finegamedesign.freedom
         {
             // FlxG.score = int(lifeTime);
             scoreText.text = FlxG.score.toString();
+            setHighScoreText();
+        }
+
+        private function setHighScoreText():void
+        {
+            var highScore:int = int.MIN_VALUE;
+            for (var s:int = 0; s < FlxG.scores.length; s++) {
+                if (highScore < FlxG.scores[s]) {
+                    highScore = FlxG.scores[s];
+                }
+            }
+            if (highScore < FlxG.score) {
+                highScore = FlxG.score;
+            }
+            highScoreText.text = "HI " + highScore;
         }
 
         /**
@@ -606,6 +641,7 @@ package com.finegamedesign.freedom
                 return;
             }
             FlxG.timeScale = 1.0;
+            tweenBgColor(palette[3] - 1, 0.25);
             //+ player.play("collide");
             player.velocity.x = 0.0;
             player.velocity.y = 0.0;
@@ -619,7 +655,6 @@ package com.finegamedesign.freedom
 
         private function lose():void
         {
-            setBulletSpeed(0.25);
             FlxG.playMusic(Sounds.music, 0.0);
             FlxG.resetState();
         }
