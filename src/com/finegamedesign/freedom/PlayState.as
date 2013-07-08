@@ -178,7 +178,7 @@ package com.finegamedesign.freedom
                 spawnTime = lifeTime;
                 lastExcludedRow = randomWalk(lastExcludedRow, cellWidth / FlxG.height);
                 lastExcludedColumn = randomWalk(lastExcludedColumn, cellWidth / FlxG.width);
-                FlxG.log("spawn " + count.toFixed(2) + " ex " + lastExcludedRow.toFixed(2) + "," + lastExcludedColumn.toFixed(2));
+                // FlxG.log("spawn " + count.toFixed(2) + " ex " + lastExcludedRow.toFixed(2) + "," + lastExcludedColumn.toFixed(2));
             }
         }
 
@@ -232,7 +232,9 @@ package com.finegamedesign.freedom
             for (var e:int = 0; e < enemies.members.length; e++) {
                 other = enemies.members[e];
                 if (null != other && other != bullet && other.alive
-                        && other.x == bullet.x && other.y == bullet.y) {
+                        && other.x == bullet.x && other.y == bullet.y
+                        && other.velocity.x == bullet.velocity.x 
+                        && other.velocity.y == bullet.velocity.y ) {
                     return null;
                 }
             }
@@ -404,7 +406,7 @@ package com.finegamedesign.freedom
             if (0.0 < toTime && toTime <= progressTime) {
                 FlxG.bgColor = toColor;
                 toTime = 0.0;
-                speedFactor = toSpeed;
+                setBulletSpeed(toSpeed);
                 // FlxG.log("interpolated " + toColor.toString(16));
             }
             else 
@@ -702,7 +704,7 @@ package com.finegamedesign.freedom
                     if (FlxG.timeScale != 1.0) {
                         FlxG.music.pause();
                         FlxG.music.resume(1000.0 * lifeTime);
-                        FlxG.log("resume " + FlxG.music.channel.position);
+                        // FlxG.log("resume " + FlxG.music.channel.position);
                         FlxG.timeScale = 1.0;
                     }
                 }
