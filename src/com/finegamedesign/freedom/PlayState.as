@@ -114,7 +114,7 @@ package com.finegamedesign.freedom
             add(titleText);
             instructionText = new FlxText(0, 0, FlxG.width, 
                 first ? "CLICK HERE"
-                      : "PRESS ARROW KEYS TO PICKUP SURVIVORS");
+                      : "DOCTOR!  PRESS ARROW KEYS\nTO RESCUE... SURVIVORS");
             instructionText.color = textColor;
             instructionText.scrollFactor.x = 0.0;
             instructionText.scrollFactor.y = 0.0;
@@ -141,7 +141,7 @@ package com.finegamedesign.freedom
             if ("start" == state && (player.velocity.x != 0.0 || player.velocity.y != 0.0))
             {
                 state = "pickup";
-                instructionText.text = "PRESS ARROW KEYS TO RESCUE SURVIVORS";
+                instructionText.text = "DOCTOR!  PRESS ARROW KEYS\nTO RESCUE... SURVIVORS";
                 titleText.text = "";
             }
             if ("play" == state) {
@@ -294,45 +294,69 @@ package com.finegamedesign.freedom
          */
         private function updateBulletSpeed():void
         {
-            var musicTime:Number = FlxG.music.channel.position / 1000.0;
+            var musicTime:int = FlxG.music.channel.position / 1000.0;
             if (musicTime < 5) {
                 tweenBgColor(palette[3], 0.5);
             }
-            else if (musicTime < 6) {
+            else if (musicTime == 6) {
                 if (lifeTime < 60) {
                     instructionText.text = "NIGHT IS SLOW YET DENSE!";
                 }
                 tweenBgColor(palette[3], 0.5);
             }
-            else if (musicTime < 11) {
+            else if (musicTime == 11) {
                 if (lifeTime < 60) {
                     instructionText.text = "TWILIGHT IS MEDIUM";
                 }
                 tweenBgColor(palette[2], 1.0);
             }
-            else if (musicTime < 22) {
+            else if (musicTime == 22) {
                 if (lifeTime < 60) {
                     instructionText.text = "DAYTIME IS EMPTY YET FAST!";
                 }
                 tweenBgColor(palette[1], 2.0);
             }
-            else if (musicTime < 33) {
+            else if (musicTime == 33) {
                 if (lifeTime < 60) {
                     instructionText.text = "";
                 }
                 tweenBgColor(palette[2], 1.0);
             }
-            else if (musicTime < 44) {
-                tweenBgColor(palette[3], 1.0);
+            else if (musicTime == 44) {
+                tweenBgColor(palette[3], 0.5);
             }
-            else if (musicTime < 55) {
+            else if (musicTime == 55) {
                 tweenBgColor(palette[2], 1.0);
             }
-            else if (musicTime < 66) {
+            else if (musicTime == 66) {
                 tweenBgColor(palette[1], 2.0);
             }
-            else if (musicTime < 66) {
+            else if (musicTime == 88) {
+                tweenBgColor(palette[2], 1.0);
+            }
+            else if (musicTime == 99) {
                 tweenBgColor(palette[1], 2.0);
+            }
+            else if (musicTime == 104) {
+                tweenBgColor(palette[2], 1.0);
+            }
+            else if (musicTime == 110) {
+                tweenBgColor(palette[1], 2.0);
+            }
+            else if (musicTime == 116) {
+                tweenBgColor(palette[3], 0.5);
+            }
+            else if (musicTime == 121) {
+                tweenBgColor(palette[2], 1.0);
+            }
+            else if (musicTime == 126) {
+                tweenBgColor(palette[1], 2.0);
+            }
+            else if (musicTime == 132) {
+                tweenBgColor(palette[2], 1.0);
+            }
+            else if (musicTime == 154) {
+                tweenBgColor(palette[1], 0.5);
             }
         }
 
@@ -670,7 +694,7 @@ package com.finegamedesign.freedom
         {
             if (FlxG.mouse.justPressed()) {
                 titleText.text = "";
-                instructionText.text = "PRESS ARROW KEYS TO RESCUE SURVIVORS";
+                instructionText.text = "DOCTOR!  PRESS ARROW KEYS\nTO RESCUE... SURVIVORS";
                 FlxG.play(Sounds.start);
             }
             mayMovePlayer();
