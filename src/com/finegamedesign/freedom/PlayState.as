@@ -5,6 +5,7 @@ package com.finegamedesign.freedom
     import flash.utils.Dictionary;
 
     import org.flixel.*;
+	import org.flixel.plugin.photonstorm.API.FlxKongregate;
    
     public class PlayState extends FlxState
     {
@@ -87,7 +88,19 @@ package com.finegamedesign.freedom
             addHud();
             state = "start";
             first = false;
+			
+			// After stage is setup, connect to Kongregate.
+			// http://flixel.org/forums/index.php?topic=293.0
+			// http://www.photonstorm.com/tags/kongregate
+			if (! FlxKongregate.hasLoaded) {
+				FlxKongregate.init(apiHasLoaded);
+			}
         }
+
+		private function apiHasLoaded():void
+		{
+			FlxKongregate.connect();
+		}
 
         /**
          * Annoyed me.
@@ -683,6 +696,7 @@ package com.finegamedesign.freedom
             FlxG.fade(0xFF000000, 4.0, lose);
             FlxG.music.fadeOut(4.0);
             state = "lose";
+            FlxKongregate.api.stats.submit("Rescues", FlxG.score);
         }
 
         private function lose():void

@@ -164,3 +164,120 @@ Simeon may expect a warning before speed up.
 Simeon may expect to restart ramp up to higher intensity.
 Simeon expects to notice additional instructions if scrolling down the page.
 
+Sun 07/07/2013 
+19:49
+
+Git log
+
+Jul 07, 2013
+
+Sync three minutes of speed to music. …
+3e6ccabb40 Browse code 
+ethankennerly authored an hour ago
+
+Plays several times. Pickup 4. Simeon expects to fix spawn.
+6543c476e1 Browse code 
+ethankennerly authored 2 hours ago
+
+Simeon may expect to read his high score.
+c857b9e4e0 Browse code 
+ethankennerly authored 2 hours ago
+
+Credit Seva and Simeon in subtitle.
+7640210d36 Browse code 
+ethankennerly authored 3 hours ago
+
+Sync to music by Seva from SoundCloud.
+54e487785f Browse code 
+ethankennerly authored 3 hours ago
+
+Stand near drone. Simeon expects to fix collision.
+32960abd5f Browse code 
+ethankennerly authored 4 hours ago
+
+See person.
+4cc924bbc4 Browse code 
+ethankennerly authored 5 hours ago
+
+Simeon may expect more gaps at night. …
+72d8295281 Browse code 
+ethankennerly authored 6 hours ago
+
+Dodge drones.
+a1fec32c6a Browse code 
+ethankennerly authored 7 hours ago
+
+Do not spawn point or exclude at edge. …
+614ded9651 Browse code 
+ethankennerly authored 8 hours ago
+
+Pickup point increases score and density.
+9375a6d7f4 Browse code 
+ethankennerly authored 9 hours ago
+
+Synchronize color fade and speed.
+85cb7c16c4 Browse code 
+ethankennerly authored 12 hours ago
+
+Fade background black, white, red, blue.
+c969d7fe41 Browse code 
+ethankennerly authored 13 hours ago
+Jul 06, 2013
+
+Simeon may expect see color fade before speed changes.
+dcad182aac Browse code 
+ethankennerly authored a day ago
+
+Shuffle spawned rows and columns.
+d04b4fce67 Browse code 
+ethankennerly authored a day ago
+
+Gap always exists that follows a random walk.
+812bd40211 Browse code 
+ethankennerly authored a day ago
+
+Each ten seconds box speed changes.
+c63ace5b31 Browse code 
+ethankennerly authored a day ago
+
+Player cannot pass through walls. Boxes can.
+14724c4887 Browse code 
+ethankennerly authored a day ago
+
+finegamedesign.com/freedom Click anywhere.
+c5fae5609c Browse code 
+ethankennerly authored a day ago
+
+Large box, small player, accelerating spawns.
+ee18bc0257 Browse code 
+ethankennerly authored a day ago
+
+Many rectangles move from any side of screen.
+fd94a9d38f Browse code 
+ethankennerly authored a day ago
+
+If red square hits blue square, restart.
+335b4bf0cc Browse code 
+ethankennerly authored a day ago
+
+Press arrow key. Pink square moves in screen.
+5389397a9d Browse code 
+ethankennerly authored a day ago
+Jul 05, 2013
+
+Press up or down. Placeholder car drifts.
+f8dc376b2f Browse code 
+ethankennerly authored 2 days ago
+
+Initial commit
+3bac4d6ddf Browse code 
+ethankennerly authored 2 days ago
+
+
+Post-mortem
+
++ Simeon replays.
++ Transparency.
+- Solo.
+- Debug tween, spawn pickup, spawn drone, collision.
+- Casual start.  Crunched finish.
